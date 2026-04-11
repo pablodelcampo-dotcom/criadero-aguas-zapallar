@@ -499,6 +499,7 @@ textarea { resize: vertical; min-height: 70px; }
           </div>
         </div>
         <div id="seg-lista"></div>
+        <div id="seg-detalle-panel"></div>
       </div>
       <div class="card">
         <div class="card-title">Potros — ranking comercial</div>
@@ -541,6 +542,7 @@ textarea { resize: vertical; min-height: 70px; }
           </tbody>
         </table>
         </div>
+        <div id="cria-detalle-panel"></div>
       </div>
       <div class="card" id="preñadas-section">
         <div class="card-title">Yeguas preñadas</div>
@@ -565,14 +567,15 @@ textarea { resize: vertical; min-height: 70px; }
         <table class="tbl">
           <thead><tr><th>Padre externo</th><th>N°</th><th>Criadero</th><th>Yegua</th><th>Resultado</th></tr></thead>
           <tbody>
-            <tr><td><b>Chiloco</b></td><td>227394</td><td>Agua de los Campos</td><td>Pillastrina</td><td>Cuento Loco ✓</td></tr>
-            <tr><td><b>Estancado</b></td><td>283675</td><td>Casas del Colorado</td><td>Cuentista</td><td>Cuento Falso ✓</td></tr>
-            <tr><td><b>Cacique</b></td><td>189777</td><td>Palmas de Peñaflor</td><td>Chinchilla T.E.</td><td>Potranca ~2024 ✓</td></tr>
-            <tr><td><b>Ícono</b></td><td>236120</td><td>Santa Bárbara</td><td>Chinchilla T.E.</td><td><span class="badge b-preg">Preñada</span></td></tr>
-            <tr><td><b>Juncal T.E.</b></td><td>220187</td><td>Santa Isabel</td><td>Tincada</td><td><span class="badge b-preg">Preñada</span></td></tr>
+            <tr style="cursor:pointer" onclick="showExterno('chiloco')"><td><b>Chiloco</b></td><td>227394</td><td>Agua de los Campos</td><td>Pillastrina</td><td><span class="badge b-cria">Cuento Loco ›</span></td></tr>
+            <tr style="cursor:pointer" onclick="showExterno('estancado')"><td><b>Estancado</b></td><td>283675</td><td>Casas del Colorado</td><td>Cuentista</td><td><span class="badge b-cria">Cuento Falso ›</span></td></tr>
+            <tr style="cursor:pointer" onclick="showExterno('cacique')"><td><b>Cacique</b></td><td>189777</td><td>Palmas de Peñaflor</td><td>Chinchilla T.E.</td><td><span class="badge b-cria">Potranca ›</span></td></tr>
+            <tr style="cursor:pointer" onclick="showExterno('icono')"><td><b>Ícono</b></td><td>236120</td><td>Santa Bárbara</td><td>Chinchilla T.E.</td><td><span class="badge b-preg">Preñada ›</span></td></tr>
+            <tr style="cursor:pointer" onclick="showExterno('juncalte')"><td><b>Juncal T.E.</b></td><td>220187</td><td>Santa Isabel</td><td>Tincada</td><td><span class="badge b-preg">Preñada ›</span></td></tr>
           </tbody>
         </table>
         </div>
+        <div id="externo-detalle-panel"></div>
       </div>
     </div>
 
@@ -728,7 +731,7 @@ textarea { resize: vertical; min-height: 70px; }
 
 <script>
 // ── VERSION Y AUTO-RELOAD ──
-const APP_VERSION = "v20260411-001";
+const APP_VERSION = "v20260411-002";
 const storedVersion = localStorage.getItem("appVersion");
 if (storedVersion && storedVersion !== APP_VERSION) {
   localStorage.setItem("appVersion", APP_VERSION);
@@ -963,17 +966,23 @@ function badgesHtml(c) {
 }
 
 // SEGUIMIENTO ACTIVO
-let seguimientos = JSON.parse(localStorage.getItem("azSeg") || "[]");
-if (seguimientos.length === 0) {
+let seguimientos = JSON.parse(localStorage.getItem("azSeg") || "null");
+const SEG_INIT_VERSION = "seg-v2";
+if (!seguimientos || localStorage.getItem("azSegVersion") !== SEG_INIT_VERSION) {
+  // Solo reiniciar si es primera vez, no si el usuario borró manualmente
+  if (!seguimientos) {
   seguimientos = [
     {cab:"Tincada", nota:"Preñada de Juncal T.E. · Parto estimado 2026", tipo:"preg"},
     {cab:"Chinchilla T.E.", nota:"Preñada de Ícono · Parto estimado 2026", tipo:"preg"},
     {cab:"Cuento Loco", nota:"Potrillo 12/11/2025 · Padre: Chiloco (3er Campeón Chile 2025)", tipo:"cria"},
     {cab:"Cuento Falso", nota:"Potrillo 28/12/2025 · Padre: Estancado", tipo:"cria"},
     {cab:"Pironela", nota:"Potranca 02/10/2025 · Padre: Peleco Mono Mono", tipo:"cria"},
+    {cab:"Potranca Cacique", nota:"Potranca ~Abril 2024 · Padre: Cacique · Madre: Chinchilla T.E.", tipo:"cria"},
     {cab:"Avispado", nota:"N° de registro en trámite · Seguimiento Biogenes pendiente", tipo:"warn"},
   ];
-  localStorage.setItem("azSeg", JSON.stringify(seguimientos));
+    localStorage.setItem("azSeg", JSON.stringify(seguimientos));
+    localStorage.setItem("azSegVersion", SEG_INIT_VERSION);
+  }
 }
 
 function renderSeg() {
@@ -983,12 +992,16 @@ function renderSeg() {
     lista.innerHTML = '<div style="font-size:12px;color:var(--text-3);padding:8px 0">Sin alertas activas.</div>';
     return;
   }
-  lista.innerHTML = seguimientos.map((s,i) => `
-    <div class="alert-item" style="position:relative">
+  lista.innerHTML = seguimientos.map((s,i) => {
+    const c = caballos.find(x=>x.nombre===s.cab);
+    const cid = c ? c.id : "";
+    return `
+    <div class="alert-item" style="position:relative;cursor:${cid?"pointer":"default"}" onclick="${cid?`showSegDetalle('${cid}')`:""}" >
       <div class="a-dot a-dot-${s.tipo}"></div>
-      <div style="flex:1"><div class="a-title">${s.cab}</div><div class="a-sub">${s.nota}</div></div>
-      ${isAdmin ? `<button onclick="eliminarSeg(${i})" style="background:transparent;border:none;color:var(--text-3);font-size:16px;cursor:pointer;padding:0 4px">×</button>` : ""}
-    </div>`).join("");
+      <div style="flex:1"><div class="a-title">${s.cab}${cid?' <span style="font-size:10px;color:var(--verde)">ver genealogía ›</span>':""}</div><div class="a-sub">${s.nota}</div></div>
+      ${isAdmin ? `<button onclick="event.stopPropagation();eliminarSeg(${i})" style="background:transparent;border:none;color:var(--text-3);font-size:16px;cursor:pointer;padding:0 4px">×</button>` : ""}
+    </div>`;
+  }).join("");
 }
 
 function mostrarFormSeg() {
@@ -1010,6 +1023,25 @@ function eliminarSeg(i) {
   seguimientos.splice(i, 1);
   localStorage.setItem("azSeg", JSON.stringify(seguimientos));
   renderSeg();
+}
+
+function showExterno(id) {
+  const c = caballos.find(x=>x.id===id);
+  if (!c) return;
+  const dp = document.getElementById("externo-detalle-panel");
+  dp.innerHTML = `<div class="detail-card" style="margin-top:10px">
+    <div class="detail-head">
+      <div class="detail-av av-m">${c.nombre.substring(0,2).toUpperCase()}</div>
+      <div>
+        <div class="detail-name">${c.nombre}</div>
+        <div class="detail-meta">${c.criadero} · N° ${c.n} · ${c.fn}</div>
+        <span class="badge b-ext">Padre externo</span>
+      </div>
+    </div>
+    <div style="font-size:11px;font-weight:500;color:var(--verde-oscuro);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px">Genealogía</div>
+    ${arbolHTML(c.nombre, c.padre, c.madre, c.ap, c.am, "")}
+  </div>`;
+  dp.scrollIntoView({behavior:"smooth",block:"nearest"});
 }
 
 function showCriaDetalle(id) {
@@ -1036,6 +1068,26 @@ function navToDetalle(id) {
   if (!c) return;
   const avCls = c.sexo==="f" ? "av-f" : c.rol==="cria" ? "av-c" : "av-m";
   const dp = document.getElementById("ranking-detail");
+  dp.innerHTML = `<div class="detail-card" style="margin-top:10px">
+    <div class="detail-head">
+      <div class="detail-av ${avCls}">${c.nombre.substring(0,2).toUpperCase()}</div>
+      <div>
+        <div class="detail-name">${c.nombre}</div>
+        <div class="detail-meta">${c.criadero} · N° ${c.n} · ${c.fn}</div>
+        <div style="margin-top:6px">${badgesHtml(c)}</div>
+      </div>
+    </div>
+    <div style="font-size:11px;font-weight:500;color:var(--verde-oscuro);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px">Genealogía</div>
+    ${arbolHTML(c.nombre, c.padre, c.madre, c.ap, c.am, "")}
+  </div>`;
+  dp.scrollIntoView({behavior:"smooth",block:"nearest"});
+}
+
+function showSegDetalle(id) {
+  const c = caballos.find(x=>x.id===id);
+  if (!c) return;
+  const avCls = c.sexo==="f" ? "av-f" : c.rol==="cria" ? "av-c" : "av-m";
+  const dp = document.getElementById("seg-detalle-panel");
   dp.innerHTML = `<div class="detail-card" style="margin-top:10px">
     <div class="detail-head">
       <div class="detail-av ${avCls}">${c.nombre.substring(0,2).toUpperCase()}</div>
@@ -1090,35 +1142,60 @@ function filtrar(tipo, btn) {
 }
 
 function arbolHTML(nombre, padre, madre, ap, am, etiqueta) {
-  const pAPar = (ap||"").split("/").map(s=>s.trim());
-  const pAMar = (am||"").split("/").map(s=>s.trim());
+  const a = (ap||"").split("/").map(s=>s.trim());
+  const b = (am||"").split("/").map(s=>s.trim());
+  // ap: [0]=AbuPP, [1]=AbuPM, [2]=BisabPP1, [3]=BisabPP2, [4]=BisabPM1, [5]=BisabPM2
+  // am: [0]=AbuMP, [1]=AbuMM, [2]=BisabMP1, [3]=BisabMP2, [4]=BisabMM1, [5]=BisabMM2
+  const abuPP  = a[0]||"—"; // Abuelo paterno (padre del padre)
+  const abuPM  = a[1]||"—"; // Abuela paterna (madre del padre)
+  const bisaPP1= a[2]||"—"; // Bisabuelo de abuPP
+  const bisaPP2= a[3]||"—"; // Bisabuela de abuPP
+  const bisaPM1= a[4]||"—"; // Bisabuelo de abuPM
+  const bisaPM2= a[5]||"—"; // Bisabuela de abuPM
+  const abuMP  = b[0]||"—"; // Abuelo materno (padre de la madre)
+  const abuMM  = b[1]||"—"; // Abuela materna (madre de la madre)
+  const bisaMP1= b[2]||"—"; // Bisabuelo de abuMP
+  const bisaMP2= b[3]||"—"; // Bisabuela de abuMP
+  const bisaMM1= b[4]||"—"; // Bisabuelo de abuMM
+  const bisaMM2= b[5]||"—"; // Bisabuela de abuMM
+
   return `
     <div style="overflow-x:auto;margin-bottom:4px">
     <table style="border-collapse:collapse;width:100%;min-width:480px;font-size:11px">
       <tbody>
         <tr>
-          <td rowspan="8" style="border:1px solid #ccc;padding:8px;font-weight:600;font-size:12px;text-align:center;background:#f4f8f5;vertical-align:middle;width:18%">${nombre}${etiqueta?`<br><span style='font-size:9px;font-weight:400;color:#888'>${etiqueta}</span>`:""}</td>
+          <td rowspan="8" style="border:1px solid #ccc;padding:8px;font-weight:600;font-size:12px;text-align:center;background:#f4f8f5;vertical-align:middle;width:18%">
+            ${nombre}${etiqueta?`<br><span style='font-size:9px;font-weight:400;color:#888'>${etiqueta}</span>`:""}
+          </td>
           <td rowspan="4" style="border:1px solid #ccc;padding:6px 8px;font-weight:500;vertical-align:middle;text-align:center;width:20%">${padre}</td>
-          <td rowspan="2" style="border:1px solid #ccc;padding:6px 8px;vertical-align:middle;text-align:center;width:20%">${pAPar[0]||"—"}</td>
-          <td style="border:1px solid #ccc;padding:5px 8px;vertical-align:middle;width:21%">${pAPar[2]||"—"}</td>
+          <td rowspan="2" style="border:1px solid #ccc;padding:6px 8px;vertical-align:middle;text-align:center;width:20%">${abuPP}</td>
+          <td style="border:1px solid #ccc;padding:5px 8px;vertical-align:middle;width:21%">${bisaPP1}</td>
         </tr>
-        <tr><td style="border:1px solid #ccc;padding:5px 8px">${pAPar[3]||"—"}</td></tr>
         <tr>
-          <td rowspan="2" style="border:1px solid #ccc;padding:6px 8px;vertical-align:middle;text-align:center">${pAPar[1]||"—"}</td>
-          <td style="border:1px solid #ccc;padding:5px 8px">${pAMar[2]||"—"}</td>
+          <td style="border:1px solid #ccc;padding:5px 8px">${bisaPP2}</td>
         </tr>
-        <tr><td style="border:1px solid #ccc;padding:5px 8px">${pAMar[3]||"—"}</td></tr>
+        <tr>
+          <td rowspan="2" style="border:1px solid #ccc;padding:6px 8px;vertical-align:middle;text-align:center">${abuPM}</td>
+          <td style="border:1px solid #ccc;padding:5px 8px">${bisaPM1}</td>
+        </tr>
+        <tr>
+          <td style="border:1px solid #ccc;padding:5px 8px">${bisaPM2}</td>
+        </tr>
         <tr>
           <td rowspan="4" style="border:1px solid #ccc;padding:6px 8px;font-weight:500;vertical-align:middle;text-align:center">${madre}</td>
-          <td rowspan="2" style="border:1px solid #ccc;padding:6px 8px;vertical-align:middle;text-align:center">${pAMar[0]||"—"}</td>
-          <td style="border:1px solid #ccc;padding:5px 8px">${pAPar[4]||"—"}</td>
+          <td rowspan="2" style="border:1px solid #ccc;padding:6px 8px;vertical-align:middle;text-align:center">${abuMP}</td>
+          <td style="border:1px solid #ccc;padding:5px 8px">${bisaMP1}</td>
         </tr>
-        <tr><td style="border:1px solid #ccc;padding:5px 8px">${pAPar[5]||"—"}</td></tr>
         <tr>
-          <td rowspan="2" style="border:1px solid #ccc;padding:6px 8px;vertical-align:middle;text-align:center">${pAMar[1]||"—"}</td>
-          <td style="border:1px solid #ccc;padding:5px 8px">${pAMar[4]||"—"}</td>
+          <td style="border:1px solid #ccc;padding:5px 8px">${bisaMP2}</td>
         </tr>
-        <tr><td style="border:1px solid #ccc;padding:5px 8px">${pAMar[5]||"—"}</td></tr>
+        <tr>
+          <td rowspan="2" style="border:1px solid #ccc;padding:6px 8px;vertical-align:middle;text-align:center">${abuMM}</td>
+          <td style="border:1px solid #ccc;padding:5px 8px">${bisaMM1}</td>
+        </tr>
+        <tr>
+          <td style="border:1px solid #ccc;padding:5px 8px">${bisaMM2}</td>
+        </tr>
       </tbody>
     </table>
     </div>
@@ -1126,6 +1203,7 @@ function arbolHTML(nombre, padre, madre, ap, am, etiqueta) {
       <div>Caballo</div><div>Padres</div><div>Abuelos</div><div>Bisabuelos</div>
     </div>`;
 }
+
 
 function showDetail(id) {
   const c = caballos.find(x=>x.id===id);
@@ -1184,7 +1262,13 @@ function simular() {
   const pPadre=pv[1], pMadre=pv[2];
   const pAP=(pv[3]||"").split("/").map(s=>s.trim());
   const pAM=(pv[4]||"").split("/").map(s=>s.trim());
-  const mPadre=mv[1], mMadre=mv[2];
+  const mPadre=mv[1], mMadre=mv[2
+  {id:"chiloco",nombre:"Chiloco",n:"227394",criadero:"Agua de los Campos",fn:"2011",sexo:"m",color:"—",padre:"Estruendo",madre:"Pirateada",ap:"Esperando/Guinda/Estribillo/Empeñosa/Choclo/Hechicera",am:"Malulo/Marinera/Bellaco/Ña Juana/Esperando/Mordaza",rol:"externo",extra:""},
+  {id:"estancado",nombre:"Estancado",n:"283675",criadero:"Casas del Colorado",fn:"2018",sexo:"m",color:"—",padre:"Estafado",madre:"Tanda",ap:"Estandarte/Totora/Estribillo/Guadaba/Abalorio/Cariñosa",am:"Tandeo/Revestida/Refran/Talavera/Reservado/Tapilla",rol:"externo",extra:""},
+  {id:"cacique",nombre:"Cacique",n:"189777",criadero:"Palmas de Peñaflor",fn:"2006",sexo:"m",color:"—",padre:"Espejo",madre:"Catalina",ap:"Estribillo/Alborada/Estribo/Reserva/Nidal/Enojadita",am:"Rico Raco/Camarera/Borracho en Dgo./Racha/Roncador/Camarilla",rol:"externo",extra:""},
+  {id:"icono",nombre:"Ícono",n:"236120",criadero:"Santa Bárbara",fn:"2012",sexo:"m",color:"—",padre:"Satanas",madre:"Pregonera",ap:"Bellaco/Amargura/Taco/Percala/El Tutito/Talonera",am:"Chacarero/Risuena/Curandero/Tapioca/Relampago/Naranjerita II",rol:"externo",extra:""},
+  {id:"juncalte",nombre:"Juncal T.E.",n:"220187",criadero:"Santa Isabel",fn:"2008",sexo:"m",color:"—",padre:"Talento",madre:"Desatada",ap:"Taco/Que Luna/Rigor/Talavera/Borracho en Dgo./Endemonia",am:"Escandalo/Diablura/Estribillo/Ociosa/Trago Largo/Almendra",rol:"externo",extra:""},
+];
   const mAP=(mv[3]||"").split("/").map(s=>s.trim());
   const mAM=(mv[4]||"").split("/").map(s=>s.trim());
 
