@@ -451,19 +451,34 @@ textarea { resize: vertical; min-height: 70px; }
     <!-- PANEL -->
     <div id="sec-panel" class="section on">
       <div class="stats-row">
-        <div class="stat-box"><div class="stat-n">8</div><div class="stat-l">Yeguas</div></div>
-        <div class="stat-box"><div class="stat-n">5</div><div class="stat-l">Potros</div></div>
-        <div class="stat-box"><div class="stat-n">3</div><div class="stat-l">Crías 2025</div></div>
-        <div class="stat-box"><div class="stat-n">2</div><div class="stat-l">Preñadas</div></div>
+        <div class="stat-box" style="cursor:pointer" onclick="navToFiltro('yegua')"><div class="stat-n">8</div><div class="stat-l">Yeguas</div></div>
+        <div class="stat-box" style="cursor:pointer" onclick="navToFiltro('potro')"><div class="stat-n">5</div><div class="stat-l">Potros</div></div>
+        <div class="stat-box" style="cursor:pointer" onclick="navTo('crias',document.querySelector('.ntab[onclick*=crias]'))"><div class="stat-n">3</div><div class="stat-l">Crías 2025</div></div>
+        <div class="stat-box" style="cursor:pointer" onclick="navToPreñadas()"><div class="stat-n">2</div><div class="stat-l">Preñadas</div></div>
       </div>
       <div class="card">
-        <div class="card-title">Seguimiento activo</div>
-        <div class="alert-item"><div class="a-dot a-dot-preg"></div><div><div class="a-title">Tincada — preñada de Juncal T.E.</div><div class="a-sub">Parto estimado 2026 · N° padre: 220187</div></div></div>
-        <div class="alert-item"><div class="a-dot a-dot-preg"></div><div><div class="a-title">Chinchilla T.E. — preñada de Ícono</div><div class="a-sub">Parto estimado 2026 · N° padre: 236120</div></div></div>
-        <div class="alert-item"><div class="a-dot a-dot-cria"></div><div><div class="a-title">Cuento Loco — potrillo 12/11/2025</div><div class="a-sub">Padre: Chiloco (3er Campeón Chile 2025) · Madre: Pillastrina</div></div></div>
-        <div class="alert-item"><div class="a-dot a-dot-cria"></div><div><div class="a-title">Cuento Falso — potrillo 28/12/2025</div><div class="a-sub">Padre: Estancado · Madre: Cuentista</div></div></div>
-        <div class="alert-item"><div class="a-dot a-dot-cria"></div><div><div class="a-title">Pironela — potranca 02/10/2025</div><div class="a-sub">Padre: Peleco Mono Mono · Madre: Las Vertientes Pirinola</div></div></div>
-        <div class="alert-item"><div class="a-dot a-dot-warn"></div><div><div class="a-title">Avispado — N° de registro en trámite</div><div class="a-sub">Seguimiento Biogenes pendiente</div></div></div>
+        <div class="card-title" style="display:flex;justify-content:space-between;align-items:center">
+          Seguimiento activo
+          <button id="btn-add-seg" onclick="mostrarFormSeg()" style="display:none;font-size:11px;padding:4px 10px;background:var(--verde);color:#fff;border:none;border-radius:6px;cursor:pointer">+ Agregar</button>
+        </div>
+        <div id="form-seg" style="display:none;margin-bottom:10px;padding:10px;background:var(--bg2);border-radius:8px">
+          <div class="form-lbl" style="margin-bottom:4px">Caballo</div>
+          <select id="seg-caballo" style="margin-bottom:6px">
+            <option>Tincada</option><option>Trasnochada</option><option>Cuentista</option>
+            <option>Pillastrina</option><option>Represa</option><option>Rústica</option>
+            <option>Protesta</option><option>Chinchilla T.E.</option>
+            <option>Delito</option><option>Avispado</option><option>Veneno</option>
+            <option>Don Gustavo</option><option>Filamento</option><option>Inquieto</option>
+            <option>Aletazo II</option><option>Cuento Loco</option><option>Cuento Falso</option><option>Pironela</option>
+          </select>
+          <div class="form-lbl" style="margin-bottom:4px">Nota</div>
+          <input type="text" id="seg-nota" placeholder="Ej: preñada de Juncal T.E." style="margin-bottom:6px">
+          <div style="display:flex;gap:6px">
+            <button onclick="agregarSeg()" style="padding:6px 12px;background:var(--verde);color:#fff;border:none;border-radius:6px;font-size:12px;cursor:pointer">Guardar</button>
+            <button onclick="document.getElementById('form-seg').style.display='none'" style="padding:6px 12px;background:transparent;border:1px solid var(--border);border-radius:6px;font-size:12px;cursor:pointer">Cancelar</button>
+          </div>
+        </div>
+        <div id="seg-lista"></div>
       </div>
       <div class="card">
         <div class="card-title">Potros — ranking comercial</div>
@@ -505,17 +520,22 @@ textarea { resize: vertical; min-height: 70px; }
         </table>
         </div>
       </div>
-      <div class="card">
+      <div class="card" id="preñadas-section">
         <div class="card-title">Yeguas preñadas</div>
         <div style="overflow-x:auto">
         <table class="tbl">
-          <thead><tr><th>Yegua</th><th>Padre</th><th>N° Padre</th><th>Estado</th></tr></thead>
+          <thead><tr><th>Yegua</th><th>Padre</th><th>N° Padre</th><th>Cría proyectada</th></tr></thead>
           <tbody>
-            <tr><td><b>Tincada</b></td><td>Juncal T.E.</td><td>220187</td><td><span class="badge b-preg">Preñada</span></td></tr>
-            <tr><td><b>Chinchilla T.E.</b></td><td>Ícono</td><td>236120</td><td><span class="badge b-preg">Preñada</span></td></tr>
+            <tr style="cursor:pointer" onclick="mostrarCriaProyectada('Tincada','Juncal T.E.','Talento','Desatada','Taco/Que Luna','Escandalo/Diablura','Regalon','Tentaita','Remehue/Rezongona','Estruendo/Tentacion')">
+              <td><b>Tincada</b></td><td>Juncal T.E.</td><td>220187</td><td><span class="badge b-preg">Ver genealogía ›</span></td>
+            </tr>
+            <tr style="cursor:pointer" onclick="mostrarCriaProyectada('Chinchilla T.E.','Ícono','Satanas','Pregonera','Bellaco/Amargura','Chacarero/Risuena','El Taita','Chupilca','Rotoso/Tranquera','Bellaco/Alqueria')">
+              <td><b>Chinchilla T.E.</b></td><td>Ícono</td><td>236120</td><td><span class="badge b-preg">Ver genealogía ›</span></td>
+            </tr>
           </tbody>
         </table>
         </div>
+        <div id="cria-proyectada-panel"></div>
       </div>
       <div class="card">
         <div class="card-title">Historial padres externos</div>
@@ -748,6 +768,10 @@ function openApp() {
   // Mostrar u ocultar pestaña Ajustes según nivel
   const ajustesTab = document.querySelector(".ntab[onclick*=\'ajustes\']");
   if (ajustesTab) ajustesTab.style.display = isAdmin ? "block" : "none";
+  // Mostrar botón agregar seguimiento solo para admin
+  const btnSeg = document.getElementById("btn-add-seg");
+  if (btnSeg) btnSeg.style.display = isAdmin ? "block" : "none";
+  renderSeg();
 }
 
 function lockApp() {
@@ -886,7 +910,7 @@ const caballos = [
   {id:"dongustavo",nombre:"Don Gustavo",n:"334579",criadero:"Las Callanas",fn:"18/08/2020",sexo:"m",color:"Alazan",padre:"Caballero",madre:"Cachetada",ap:"Contulmo / Minga",am:"Guindao / Palometa",rol:"potro",rango:4,extra:""},
   {id:"filamento",nombre:"Filamento",n:"312625",criadero:"Agua de los Campos",fn:"26/12/2022",sexo:"m",color:"Mulato",padre:"Topeando",madre:"Pellejuda",ap:"Canteado / Topeadura",am:"Chamullo / Negrita",rol:"potro",rango:5,extra:""},
   {id:"inquieto",nombre:"Inquieto",n:"241280",criadero:"Los Gomeros",fn:"10/11/2013",sexo:"m",color:"Mulato",padre:"Curioso",madre:"Gotita",ap:"Fogoso / Puntilla",am:"Capuchino / La Secretada",rol:"norep",extra:"cast"},
-  {id:"aletazo",nombre:"Aletazo II",n:"293176",criadero:"Las Callanas",fn:"2016",sexo:"m",color:"—",padre:"Bajativo",madre:"Cortita",ap:"Capuchino / Desganada",am:"Malulo / Cucha Linda",rol:"norep",extra:""},
+  {id:"aletazo",nombre:"Aletazo II",n:"293176",criadero:"Las Callanas",fn:"2016",sexo:"m",color:"—",padre:"Bajativo",madre:"Cortita",ap:"Capuchino / Desganada",am:"Malulo / Cucha Linda",rol:"potro",extra:""},
   {id:"cuentoloco",nombre:"Cuento Loco",n:"—",criadero:"Aguas de Zapallar",fn:"12/11/2025",sexo:"m",color:"—",padre:"Chiloco",madre:"Pillastrina",ap:"Estruendo / Pirateada",am:"Cuenta Cuentos / Pellejuda",rol:"cria",extra:""},
   {id:"cuentofalso",nombre:"Cuento Falso",n:"—",criadero:"Aguas de Zapallar",fn:"28/12/2025",sexo:"m",color:"—",padre:"Estancado",madre:"Cuentista",ap:"Estafado / Tanda",am:"Cuenta Cuentos / Concubina",rol:"cria",extra:""},
   {id:"pironela",nombre:"Pironela",n:"—",criadero:"Aguas de Zapallar",fn:"02/10/2025",sexo:"f",color:"—",padre:"Peleco Mono Mono",madre:"Las Vertientes Pirinola",ap:"Requinto / Estupenda",am:"Piropero / Tormenta",rol:"cria",extra:""},
@@ -894,7 +918,8 @@ const caballos = [
 
 function badgesHtml(c) {
   let b = "";
-  if (c.rol==="potro") b += `<span class="badge b-sem">#${c.rango} Potro</span>`;
+  if (c.rol==="potro" && c.rango) b += `<span class="badge b-sem">#${c.rango} Potro</span>`;
+  if (c.rol==="potro" && !c.rango) b += `<span class="badge b-sem">Potro</span>`;
   if (c.rol==="yegua" && c.extra==="preg") b += `<span class="badge b-preg">Preñada</span>`;
   if (c.rol==="yegua" && c.extra==="cria") b += `<span class="badge b-cria">Con cría 2025</span>`;
   if (c.rol==="cria") b += `<span class="badge b-cria">Cría haras</span>`;
@@ -902,6 +927,73 @@ function badgesHtml(c) {
   if (c.rol==="norep" && !c.extra) b += `<span class="badge b-norep">No reproductor</span>`;
   if (c.color && c.color!=="—") b += `<span class="badge" style="background:#f5f5f5;color:#555">${c.color}</span>`;
   return b;
+}
+
+// SEGUIMIENTO ACTIVO
+let seguimientos = JSON.parse(localStorage.getItem("azSeg") || "[]");
+if (seguimientos.length === 0) {
+  seguimientos = [
+    {cab:"Tincada", nota:"Preñada de Juncal T.E. · Parto estimado 2026", tipo:"preg"},
+    {cab:"Chinchilla T.E.", nota:"Preñada de Ícono · Parto estimado 2026", tipo:"preg"},
+    {cab:"Cuento Loco", nota:"Potrillo 12/11/2025 · Padre: Chiloco (3er Campeón Chile 2025)", tipo:"cria"},
+    {cab:"Cuento Falso", nota:"Potrillo 28/12/2025 · Padre: Estancado", tipo:"cria"},
+    {cab:"Pironela", nota:"Potranca 02/10/2025 · Padre: Peleco Mono Mono", tipo:"cria"},
+    {cab:"Avispado", nota:"N° de registro en trámite · Seguimiento Biogenes pendiente", tipo:"warn"},
+  ];
+  localStorage.setItem("azSeg", JSON.stringify(seguimientos));
+}
+
+function renderSeg() {
+  const lista = document.getElementById("seg-lista");
+  if (!lista) return;
+  if (seguimientos.length === 0) {
+    lista.innerHTML = '<div style="font-size:12px;color:var(--text-3);padding:8px 0">Sin alertas activas.</div>';
+    return;
+  }
+  lista.innerHTML = seguimientos.map((s,i) => `
+    <div class="alert-item" style="position:relative">
+      <div class="a-dot a-dot-${s.tipo}"></div>
+      <div style="flex:1"><div class="a-title">${s.cab}</div><div class="a-sub">${s.nota}</div></div>
+      ${isAdmin ? `<button onclick="eliminarSeg(${i})" style="background:transparent;border:none;color:var(--text-3);font-size:16px;cursor:pointer;padding:0 4px">×</button>` : ""}
+    </div>`).join("");
+}
+
+function mostrarFormSeg() {
+  document.getElementById("form-seg").style.display = "block";
+}
+
+function agregarSeg() {
+  const cab = document.getElementById("seg-caballo").value;
+  const nota = document.getElementById("seg-nota").value.trim();
+  if (!nota) return;
+  seguimientos.push({cab, nota, tipo:"warn"});
+  localStorage.setItem("azSeg", JSON.stringify(seguimientos));
+  document.getElementById("form-seg").style.display = "none";
+  document.getElementById("seg-nota").value = "";
+  renderSeg();
+}
+
+function eliminarSeg(i) {
+  seguimientos.splice(i, 1);
+  localStorage.setItem("azSeg", JSON.stringify(seguimientos));
+  renderSeg();
+}
+
+function navToFiltro(tipo) {
+  const tab = document.querySelector(".ntab[onclick*='caballos']");
+  navTo("caballos", tab);
+  setTimeout(() => {
+    const btn = document.querySelector(`.fbtn[onclick*="${tipo}"]`);
+    if (btn) filtrar(tipo, btn);
+  }, 50);
+}
+
+function navToPreñadas() {
+  const tab = document.querySelector(".ntab[onclick*='crias']");
+  navTo("crias", tab);
+  setTimeout(() => {
+    document.getElementById("preñadas-section").scrollIntoView({behavior:"smooth"});
+  }, 100);
 }
 
 function renderGrid(lista) {
@@ -930,6 +1022,11 @@ function showDetail(id) {
   if (!c) return;
   const avCls = c.sexo==="f" ? "av-f" : c.rol==="cria" ? "av-c" : "av-m";
   const dp = document.getElementById("detail-panel");
+
+  // Árbol genealógico estilo Biogenes
+  const pAPar = (c.ap||"").split("/").map(s=>s.trim());
+  const pAMar = (c.am||"").split("/").map(s=>s.trim());
+
   dp.innerHTML = `<div class="detail-card">
     <div class="detail-head">
       <div class="detail-av ${avCls}">${c.nombre.substring(0,2).toUpperCase()}</div>
@@ -939,11 +1036,26 @@ function showDetail(id) {
         <div style="margin-top:6px">${badgesHtml(c)}</div>
       </div>
     </div>
-    <div class="gene-grid">
-      <div class="gene-row"><span class="gene-lbl">Padre</span><span class="gene-val">${c.padre}</span></div>
-      <div class="gene-row"><span class="gene-lbl">Madre</span><span class="gene-val">${c.madre}</span></div>
-      <div class="gene-row"><span class="gene-lbl">Abuelos pat.</span><span class="gene-val">${c.ap}</span></div>
-      <div class="gene-row"><span class="gene-lbl">Abuelos mat.</span><span class="gene-val">${c.am}</span></div>
+    <div style="font-size:11px;font-weight:500;color:var(--verde-oscuro);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px">Genealogía</div>
+    <div style="overflow-x:auto">
+    <table style="border-collapse:collapse;width:100%;min-width:380px;font-size:11px">
+      <tbody>
+        <tr>
+          <td rowspan="4" style="border:1px solid #ccc;padding:8px;font-weight:600;font-size:12px;text-align:center;background:#f4f8f5;vertical-align:middle;width:22%">${c.nombre}</td>
+          <td rowspan="2" style="border:1px solid #ccc;padding:6px 8px;font-weight:500;vertical-align:middle;text-align:center;width:26%">${c.padre}</td>
+          <td style="border:1px solid #ccc;padding:5px 8px;vertical-align:middle">${pAPar[0]||"—"}</td>
+        </tr>
+        <tr><td style="border:1px solid #ccc;padding:5px 8px;vertical-align:middle">${pAPar[1]||"—"}</td></tr>
+        <tr>
+          <td rowspan="2" style="border:1px solid #ccc;padding:6px 8px;font-weight:500;vertical-align:middle;text-align:center">${c.madre}</td>
+          <td style="border:1px solid #ccc;padding:5px 8px;vertical-align:middle">${pAMar[0]||"—"}</td>
+        </tr>
+        <tr><td style="border:1px solid #ccc;padding:5px 8px;vertical-align:middle">${pAMar[1]||"—"}</td></tr>
+      </tbody>
+    </table>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:4px;font-size:10px;color:#888;text-align:center;margin-top:4px">
+      <div>Caballo</div><div>Padres</div><div>Abuelos</div>
     </div>
   </div>`;
   dp.scrollIntoView({behavior:"smooth",block:"nearest"});
@@ -1058,6 +1170,61 @@ function simular() {
   document.querySelector(".compat-wrap").style.display="none";
 
   res.scrollIntoView({behavior:"smooth",block:"nearest"});
+}
+
+function mostrarCriaProyectada(yegua, padre, pPadre, pMadre, pAP, pAM, mPadre, mMadre, mAP, mAM) {
+  const pAPar = pAP.split("/").map(s=>s.trim());
+  const pAMar = pAM.split("/").map(s=>s.trim());
+  const mAPar = mAP.split("/").map(s=>s.trim());
+  const mAMar = mAM.split("/").map(s=>s.trim());
+
+  // Detectar consanguinidad
+  const pAll=[padre,pPadre,pMadre,...pAPar,...pAMar].map(s=>s.toLowerCase().trim());
+  const mAll=[yegua,mPadre,mMadre,...mAPar,...mAMar].map(s=>s.toLowerCase().trim());
+  const consang = pAll.filter(a=>a&&a.length>2&&mAll.includes(a));
+
+  const panel = document.getElementById("cria-proyectada-panel");
+  panel.innerHTML = `
+    <div style="margin-top:12px;border-top:1px solid var(--border);padding-top:12px">
+      <div style="font-size:11px;font-weight:500;color:var(--verde-oscuro);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px">Cría proyectada — ${padre} × ${yegua}</div>
+      <div style="overflow-x:auto">
+      <table style="border-collapse:collapse;width:100%;min-width:380px;font-size:11px">
+        <tbody>
+          <tr>
+            <td rowspan="8" style="border:1px solid #ccc;padding:8px;font-weight:600;font-size:12px;text-align:center;background:#f4f8f5;vertical-align:middle;width:20%">
+              Cría NN<br><span style="font-size:10px;font-weight:400;color:#666">${padre} × ${yegua}</span>
+            </td>
+            <td rowspan="4" style="border:1px solid #ccc;padding:6px 8px;font-weight:500;vertical-align:middle;text-align:center;width:22%">${padre}</td>
+            <td rowspan="2" style="border:1px solid #ccc;padding:6px 8px;vertical-align:middle;text-align:center;width:22%">${pPadre}</td>
+            <td style="border:1px solid #ccc;padding:5px 8px;vertical-align:middle">${pAPar[0]||"—"}</td>
+          </tr>
+          <tr><td style="border:1px solid #ccc;padding:5px 8px">${pAPar[1]||"—"}</td></tr>
+          <tr>
+            <td rowspan="2" style="border:1px solid #ccc;padding:6px 8px;vertical-align:middle;text-align:center">${pMadre}</td>
+            <td style="border:1px solid #ccc;padding:5px 8px">${pAMar[0]||"—"}</td>
+          </tr>
+          <tr><td style="border:1px solid #ccc;padding:5px 8px">${pAMar[1]||"—"}</td></tr>
+          <tr>
+            <td rowspan="4" style="border:1px solid #ccc;padding:6px 8px;font-weight:500;vertical-align:middle;text-align:center;background:#fce4ec22">${yegua}</td>
+            <td rowspan="2" style="border:1px solid #ccc;padding:6px 8px;vertical-align:middle;text-align:center">${mPadre}</td>
+            <td style="border:1px solid #ccc;padding:5px 8px">${mAPar[0]||"—"}</td>
+          </tr>
+          <tr><td style="border:1px solid #ccc;padding:5px 8px">${mAPar[1]||"—"}</td></tr>
+          <tr>
+            <td rowspan="2" style="border:1px solid #ccc;padding:6px 8px;vertical-align:middle;text-align:center">${mMadre}</td>
+            <td style="border:1px solid #ccc;padding:5px 8px">${mAMar[0]||"—"}</td>
+          </tr>
+          <tr><td style="border:1px solid #ccc;padding:5px 8px">${mAMar[1]||"—"}</td></tr>
+        </tbody>
+      </table>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:4px;font-size:10px;color:#888;text-align:center;margin-top:4px">
+        <div>Cría</div><div>Padres</div><div>Abuelos</div><div>Bisabuelos</div>
+      </div>
+      ${consang.length>0 ? `<div style="background:#fff3e0;border:1px solid #ffb74d;border-radius:8px;padding:8px 10px;font-size:11px;color:#e65100;margin-top:8px">Ancestros comunes: ${consang.map(s=>s.charAt(0).toUpperCase()+s.slice(1)).join(", ")}. Evalúe consanguinidad.</div>` : ""}
+    </div>
+  `;
+  panel.scrollIntoView({behavior:"smooth",block:"nearest"});
 }
 
 function guardar() {
