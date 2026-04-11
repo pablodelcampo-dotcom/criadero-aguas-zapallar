@@ -638,10 +638,20 @@ textarea { resize: vertical; min-height: 70px; }
       <div class="card">
         <div class="card-title">Seguridad</div>
         <div class="setting-item">
-          <div><div class="setting-title">Cambiar clave de acceso</div><div class="setting-sub">La clave actual dejará de funcionar al confirmar la nueva</div></div>
+          <div><div class="setting-title">Cambiar clave de acceso</div><div class="setting-sub">Puedes cambiar la clave de usuarios o la clave de administrador</div></div>
+        </div>
+        <div style="background:var(--verde-muy-claro);border-radius:8px;padding:10px 12px;margin-bottom:10px;font-size:12px;color:var(--verde-oscuro)">
+          <div style="font-weight:500;margin-bottom:4px">Dos niveles de acceso activos:</div>
+          <div>· Clave de administrador — solo tú, accede a Ajustes y cambio de claves</div>
+          <div>· Clave de usuarios — trabajadores, solo ven datos y registran eventos</div>
         </div>
         <div class="pin-change-wrap" id="change-wrap">
           <div class="change-step" id="step1">
+            <div class="change-step-title">¿Qué clave desea cambiar?</div>
+            <select id="change-tipo" style="margin-bottom:12px;width:100%;padding:8px;border:1px solid var(--border);border-radius:8px;font-family:var(--font-sans);font-size:13px">
+              <option value="usuario">Clave de usuarios / trabajadores</option>
+              <option value="admin">Clave de administrador (solo yo)</option>
+            </select>
             <div class="change-step-title">Nueva clave (6 dígitos)</div>
             <div class="mini-dots" id="new-dots"></div>
             <div class="mini-keypad" id="new-keypad"></div>
@@ -676,8 +686,12 @@ textarea { resize: vertical; min-height: 70px; }
 
 <script>
 // ── SEGURIDAD ──
-const DEFAULT_PIN = "123456";
-let currentPin = localStorage.getItem("azPin") || DEFAULT_PIN;
+const ADMIN_PIN_KEY = "azAdminPin";
+const USER_PIN_KEY = "azUserPin";
+let adminPin = localStorage.getItem(ADMIN_PIN_KEY) || "114511";
+let userPin = localStorage.getItem(USER_PIN_KEY) || "456789";
+let currentPin = localStorage.getItem("azPin") || "456789";
+let isAdmin = false;
 let pinInput = "";
 let inactivityTimer = null;
 let timerBarInterval = null;
@@ -704,15 +718,12 @@ function updateDots() {
 }
 
 function checkPin() {
-  if (pinInput === currentPin) {
-    document.getElementById("login-screen").style.display = "none";
-    document.getElementById("inactivity-overlay").classList.remove("show");
-    const app = document.getElementById("app-screen");
-    app.classList.add("visible");
-    pinInput = "";
-    updateDots();
-    resetInactivity();
-    startTimerBar();
+  if (pinInput === adminPin) {
+    isAdmin = true;
+    openApp();
+  } else if (pinInput === userPin) {
+    isAdmin = false;
+    openApp();
   } else {
     document.getElementById("login-error").classList.add("show");
     document.getElementById("pin-display").style.animation = "shake .3s";
@@ -725,8 +736,23 @@ function checkPin() {
   }
 }
 
+function openApp() {
+  document.getElementById("login-screen").style.display = "none";
+  document.getElementById("inactivity-overlay").classList.remove("show");
+  const app = document.getElementById("app-screen");
+  app.classList.add("visible");
+  pinInput = "";
+  updateDots();
+  resetInactivity();
+  startTimerBar();
+  // Mostrar u ocultar pestaña Ajustes según nivel
+  const ajustesTab = document.querySelector(".ntab[onclick*=\'ajustes\']");
+  if (ajustesTab) ajustesTab.style.display = isAdmin ? "block" : "none";
+}
+
 function lockApp() {
   pinInput = "";
+  isAdmin = false;
   updateDots();
   document.getElementById("app-screen").classList.remove("visible");
   document.getElementById("inactivity-overlay").classList.remove("show");
@@ -819,8 +845,15 @@ function goStep2() {
 
 function confirmPin() {
   if (newPin === confPin) {
-    currentPin = newPin;
-    localStorage.setItem("azPin", currentPin);
+    // Tipo de clave a cambiar
+    const tipo = document.getElementById("change-tipo").value;
+    if (tipo === "usuario") {
+      userPin = newPin;
+      localStorage.setItem(USER_PIN_KEY, userPin);
+    } else {
+      adminPin = newPin;
+      localStorage.setItem(ADMIN_PIN_KEY, adminPin);
+    }
     document.getElementById("change-ok").style.display = "block";
     document.getElementById("change-err").textContent = "";
     document.getElementById("step2").style.display = "none";
