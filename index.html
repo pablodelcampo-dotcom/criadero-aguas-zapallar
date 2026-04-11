@@ -982,27 +982,81 @@ todos13.forEach((n,i) => {
 function simular() {
   const pv = document.getElementById("sel-padre").value.split("|");
   const mv = document.getElementById("sel-madre").value.split("|");
-  const pN=pv[0], mN=mv[0], pP=pv[1], pM=pv[2], mP=mv[1], mM=mv[2];
-  const pAll=[pN,pP,pM,...(pv[3]||"").split("/"),...(pv[4]||"").split("/")].map(s=>s.trim().toLowerCase());
-  const mAll=[mN,mP,mM,...(mv[3]||"").split("/"),...(mv[4]||"").split("/")].map(s=>s.trim().toLowerCase());
+  const pN=pv[0], mN=mv[0];
+  const pPadre=pv[1], pMadre=pv[2], pAP=pv[3]||"", pAM=pv[4]||"";
+  const mPadre=mv[1], mMadre=mv[2], mAP=mv[3]||"", mAM=mv[4]||"";
+
+  // Bisabuelos: dividir abuelos en pares
+  const pAPar = pAP.split("/").map(s=>s.trim());
+  const pAMar = pAM.split("/").map(s=>s.trim());
+  const mAPar = mAP.split("/").map(s=>s.trim());
+  const mAMar = mAM.split("/").map(s=>s.trim());
+
+  // Detectar consanguinidad
+  const pAll=[pN,pPadre,pMadre,...pAPar,...pAMar].map(s=>s.trim().toLowerCase());
+  const mAll=[mN,mPadre,mMadre,...mAPar,...mAMar].map(s=>s.trim().toLowerCase());
   const consang = pAll.filter(a=>a&&a.length>2&&mAll.includes(a));
-  let compat = 84;
-  if (pP===mP||pM===mM) compat=58;
-  if (consang.length>0) compat=Math.max(40,compat-consang.length*13);
-  const traits=[{l:"Velocidad",v:Math.min(96,68+Math.floor(Math.random()*22))},{l:"Resistencia",v:Math.min(96,64+Math.floor(Math.random()*26))},{l:"Conformación",v:Math.min(96,70+Math.floor(Math.random()*20))},{l:"Temperamento",v:Math.min(96,66+Math.floor(Math.random()*24))},{l:"Alzada",v:Math.min(96,68+Math.floor(Math.random()*20))}];
+
   const res = document.getElementById("sim-result");
   res.style.display="block";
-  document.getElementById("sim-titulo").textContent = `${pN} × ${mN}`;
-  document.getElementById("sim-traits").innerHTML = traits.map(t=>`<div class="trait-row"><span class="trait-lbl">${t.l}</span><div class="trait-bg"><div class="trait-fill" data-v="${t.v}"></div></div><span class="trait-pct">${t.v}%</span></div>`).join("");
-  document.getElementById("compat-fill").style.width="0%";
-  document.getElementById("compat-pct").textContent=compat+"%";
+  document.getElementById("sim-titulo").textContent = `Cría proyectada: ${pN} × ${mN}`;
+
+  document.getElementById("sim-traits").innerHTML = `
+    <div style="font-size:11px;font-weight:500;color:var(--verde-oscuro);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:10px">Árbol genealógico proyectado</div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px">
+      <div style="background:white;border-radius:8px;padding:10px;border:1px solid rgba(26,107,74,0.2)">
+        <div style="font-size:10px;color:var(--verde);font-weight:500;margin-bottom:6px;text-transform:uppercase;letter-spacing:0.05em">Línea paterna</div>
+        <div style="font-size:13px;font-weight:500;color:var(--text);margin-bottom:4px">${pN}</div>
+        <div style="font-size:11px;color:var(--text-2);margin-bottom:2px">Padre: <b>${pPadre}</b></div>
+        <div style="font-size:11px;color:var(--text-2);margin-bottom:6px">Madre: <b>${pMadre}</b></div>
+        <div style="font-size:10px;color:var(--text-3);border-top:1px solid rgba(0,0,0,0.06);padding-top:6px">
+          <div style="margin-bottom:2px">Abuelo pat.: <b style="color:var(--text-2)">${pAPar[0]||"—"}</b></div>
+          <div style="margin-bottom:2px">Abuela pat.: <b style="color:var(--text-2)">${pAPar[1]||"—"}</b></div>
+          <div style="margin-bottom:2px">Abuelo mat.: <b style="color:var(--text-2)">${pAMar[0]||"—"}</b></div>
+          <div>Abuela mat.: <b style="color:var(--text-2)">${pAMar[1]||"—"}</b></div>
+        </div>
+      </div>
+      <div style="background:white;border-radius:8px;padding:10px;border:1px solid rgba(26,107,74,0.2)">
+        <div style="font-size:10px;color:#880e4f;font-weight:500;margin-bottom:6px;text-transform:uppercase;letter-spacing:0.05em">Línea materna</div>
+        <div style="font-size:13px;font-weight:500;color:var(--text);margin-bottom:4px">${mN}</div>
+        <div style="font-size:11px;color:var(--text-2);margin-bottom:2px">Padre: <b>${mPadre}</b></div>
+        <div style="font-size:11px;color:var(--text-2);margin-bottom:6px">Madre: <b>${mMadre}</b></div>
+        <div style="font-size:10px;color:var(--text-3);border-top:1px solid rgba(0,0,0,0.06);padding-top:6px">
+          <div style="margin-bottom:2px">Abuelo pat.: <b style="color:var(--text-2)">${mAPar[0]||"—"}</b></div>
+          <div style="margin-bottom:2px">Abuela pat.: <b style="color:var(--text-2)">${mAPar[1]||"—"}</b></div>
+          <div style="margin-bottom:2px">Abuelo mat.: <b style="color:var(--text-2)">${mAMar[0]||"—"}</b></div>
+          <div>Abuela mat.: <b style="color:var(--text-2)">${mAMar[1]||"—"}</b></div>
+        </div>
+      </div>
+    </div>
+
+    <div style="background:white;border-radius:8px;padding:10px;border:2px solid rgba(26,107,74,0.3);margin-bottom:8px">
+      <div style="font-size:10px;color:var(--verde);font-weight:500;margin-bottom:6px;text-transform:uppercase;letter-spacing:0.05em">Cría proyectada</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;font-size:12px">
+        <div style="color:var(--text-3)">Padre</div><div style="font-weight:500;color:var(--text)">${pN}</div>
+        <div style="color:var(--text-3)">Madre</div><div style="font-weight:500;color:var(--text)">${mN}</div>
+        <div style="color:var(--text-3)">Abuelo pat.</div><div style="color:var(--text-2)">${pPadre}</div>
+        <div style="color:var(--text-3)">Abuela pat.</div><div style="color:var(--text-2)">${pMadre}</div>
+        <div style="color:var(--text-3)">Abuelo mat.</div><div style="color:var(--text-2)">${mPadre}</div>
+        <div style="color:var(--text-3)">Abuela mat.</div><div style="color:var(--text-2)">${mMadre}</div>
+        <div style="color:var(--text-3)">Bisabuelos pat.</div><div style="color:var(--text-2);font-size:11px">${pAPar[0]||"—"}, ${pAPar[1]||"—"}, ${pAMar[0]||"—"}, ${pAMar[1]||"—"}</div>
+        <div style="color:var(--text-3)">Bisabuelos mat.</div><div style="color:var(--text-2);font-size:11px">${mAPar[0]||"—"}, ${mAPar[1]||"—"}, ${mAMar[0]||"—"}, ${mAMar[1]||"—"}</div>
+      </div>
+    </div>
+  `;
+
   const cw=document.getElementById("consang-warn");
-  if(consang.length>0){cw.style.display="block";cw.textContent="Ancestros comunes detectados: "+consang.map(s=>s.charAt(0).toUpperCase()+s.slice(1)).join(", ")+". Evalúe consanguinidad.";}
-  else cw.style.display="none";
-  setTimeout(()=>{
-    document.querySelectorAll(".trait-fill").forEach(el=>el.style.width=el.dataset.v+"%");
-    document.getElementById("compat-fill").style.width=compat+"%";
-  },80);
+  if(consang.length>0){
+    cw.style.display="block";
+    cw.textContent="Ancestros comunes detectados: "+consang.map(s=>s.charAt(0).toUpperCase()+s.slice(1)).join(", ")+". Evalúe consanguinidad antes de realizar el cruce.";
+  } else {
+    cw.style.display="none";
+  }
+
+  // Ocultar barra de compatibilidad (ya no aplica)
+  document.querySelector(".compat-wrap").style.display="none";
+
   res.scrollIntoView({behavior:"smooth",block:"nearest"});
 }
 
