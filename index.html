@@ -3,6 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Aguas de Zapallar">
@@ -706,6 +709,16 @@ textarea { resize: vertical; min-height: 70px; }
 </div>
 
 <script>
+// ── VERSION Y AUTO-RELOAD ──
+const APP_VERSION = "v20260411-001";
+const storedVersion = localStorage.getItem("appVersion");
+if (storedVersion && storedVersion !== APP_VERSION) {
+  localStorage.setItem("appVersion", APP_VERSION);
+  window.location.reload(true);
+} else {
+  localStorage.setItem("appVersion", APP_VERSION);
+}
+
 // ── SEGURIDAD ──
 const ADMIN_PIN_KEY = "azAdminPin";
 const USER_PIN_KEY = "azUserPin";
