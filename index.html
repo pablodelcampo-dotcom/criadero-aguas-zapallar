@@ -582,28 +582,79 @@ function startTimer() {
 });
 
 // ===== ARBOL GENEALOGICO =====
-function arbolHTML(nombre, padre, madre, ap, am, etiqueta) {
+// ap formato: "AbuPP/AbuPM/BisaPP1/BisaPP2/BisaPM1/BisaPM2"
+// Para tatarabuelos se pasan como parametro extra tatAP y tatAM
+function arbolHTML(nombre, padre, madre, ap, am, etiqueta, tatAP, tatAM) {
   var a = (ap || "").split("/").map(function(s) { return s.trim(); });
   var b = (am || "").split("/").map(function(s) { return s.trim(); });
-  var html = '<div class="arbol-wrap"><table class="arbol-table"><tbody>';
-  html += '<tr>';
-  html += '<td class="arbol-caballo" rowspan="8">' + nombre + (etiqueta ? '<br><small style="font-weight:400;color:#666;font-size:9px">' + etiqueta + '</small>' : '') + '</td>';
-  html += '<td class="arbol-padre" rowspan="4">' + padre + '</td>';
-  html += '<td class="arbol-abuelo" rowspan="2">' + (a[0]||"-") + '</td>';
-  html += '<td class="arbol-bisabuelo">' + (a[2]||"-") + '</td>';
-  html += '</tr><tr><td class="arbol-bisabuelo">' + (a[3]||"-") + '</td></tr>';
-  html += '<tr><td class="arbol-abuelo" rowspan="2">' + (a[1]||"-") + '</td>';
-  html += '<td class="arbol-bisabuelo">' + (a[4]||"-") + '</td>';
-  html += '</tr><tr><td class="arbol-bisabuelo">' + (a[5]||"-") + '</td></tr>';
-  html += '<tr><td class="arbol-padre" rowspan="4">' + madre + '</td>';
-  html += '<td class="arbol-abuelo" rowspan="2">' + (b[0]||"-") + '</td>';
-  html += '<td class="arbol-bisabuelo">' + (b[2]||"-") + '</td>';
-  html += '</tr><tr><td class="arbol-bisabuelo">' + (b[3]||"-") + '</td></tr>';
-  html += '<tr><td class="arbol-abuelo" rowspan="2">' + (b[1]||"-") + '</td>';
-  html += '<td class="arbol-bisabuelo">' + (b[4]||"-") + '</td>';
-  html += '</tr><tr><td class="arbol-bisabuelo">' + (b[5]||"-") + '</td></tr>';
-  html += '</tbody></table></div>';
-  html += '<div class="arbol-labels"><div>Caballo</div><div>Padres</div><div>Abuelos</div><div>Bisabuelos</div></div>';
+  var ta = (tatAP || "").split("/").map(function(s) { return s.trim(); });
+  var tb = (tatAM || "").split("/").map(function(s) { return s.trim(); });
+  var hasTatar = tatAP || tatAM;
+  var cols = hasTatar ? 5 : 4;
+  var minW = hasTatar ? 600 : 480;
+  var rows = 16;
+  var html = '<div class="arbol-wrap"><table class="arbol-table" style="min-width:' + minW + 'px"><tbody>';
+
+  if (hasTatar) {
+    // 5 generaciones: caballo, padres, abuelos, bisabuelos, tatarabuelos
+    // Linea paterna - abuelo paterno
+    html += '<tr>';
+    html += '<td class="arbol-caballo" rowspan="16">' + nombre + (etiqueta ? '<br><small style="font-weight:400;color:#666;font-size:9px">' + etiqueta + '</small>' : '') + '</td>';
+    html += '<td class="arbol-padre" rowspan="8">' + padre + '</td>';
+    html += '<td class="arbol-abuelo" rowspan="4">' + (a[0]||"-") + '</td>';
+    html += '<td class="arbol-bisabuelo" rowspan="2">' + (a[2]||"-") + '</td>';
+    html += '<td style="border:1px solid #ccc;padding:4px 6px;font-size:10px">' + (ta[0]||"-") + '</td></tr>';
+    html += '<tr><td style="border:1px solid #ccc;padding:4px 6px;font-size:10px">' + (ta[1]||"-") + '</td></tr>';
+    html += '<tr><td class="arbol-bisabuelo" rowspan="2">' + (a[3]||"-") + '</td>';
+    html += '<td style="border:1px solid #ccc;padding:4px 6px;font-size:10px">' + (ta[2]||"-") + '</td></tr>';
+    html += '<tr><td style="border:1px solid #ccc;padding:4px 6px;font-size:10px">' + (ta[3]||"-") + '</td></tr>';
+    // abuelo paterno - linea materna del padre
+    html += '<tr><td class="arbol-abuelo" rowspan="4">' + (a[1]||"-") + '</td>';
+    html += '<td class="arbol-bisabuelo" rowspan="2">' + (a[4]||"-") + '</td>';
+    html += '<td style="border:1px solid #ccc;padding:4px 6px;font-size:10px">' + (ta[4]||"-") + '</td></tr>';
+    html += '<tr><td style="border:1px solid #ccc;padding:4px 6px;font-size:10px">' + (ta[5]||"-") + '</td></tr>';
+    html += '<tr><td class="arbol-bisabuelo" rowspan="2">' + (a[5]||"-") + '</td>';
+    html += '<td style="border:1px solid #ccc;padding:4px 6px;font-size:10px">' + (ta[6]||"-") + '</td></tr>';
+    html += '<tr><td style="border:1px solid #ccc;padding:4px 6px;font-size:10px">' + (ta[7]||"-") + '</td></tr>';
+    // linea materna
+    html += '<tr><td class="arbol-padre" rowspan="8">' + madre + '</td>';
+    html += '<td class="arbol-abuelo" rowspan="4">' + (b[0]||"-") + '</td>';
+    html += '<td class="arbol-bisabuelo" rowspan="2">' + (b[2]||"-") + '</td>';
+    html += '<td style="border:1px solid #ccc;padding:4px 6px;font-size:10px">' + (tb[0]||"-") + '</td></tr>';
+    html += '<tr><td style="border:1px solid #ccc;padding:4px 6px;font-size:10px">' + (tb[1]||"-") + '</td></tr>';
+    html += '<tr><td class="arbol-bisabuelo" rowspan="2">' + (b[3]||"-") + '</td>';
+    html += '<td style="border:1px solid #ccc;padding:4px 6px;font-size:10px">' + (tb[2]||"-") + '</td></tr>';
+    html += '<tr><td style="border:1px solid #ccc;padding:4px 6px;font-size:10px">' + (tb[3]||"-") + '</td></tr>';
+    html += '<tr><td class="arbol-abuelo" rowspan="4">' + (b[1]||"-") + '</td>';
+    html += '<td class="arbol-bisabuelo" rowspan="2">' + (b[4]||"-") + '</td>';
+    html += '<td style="border:1px solid #ccc;padding:4px 6px;font-size:10px">' + (tb[4]||"-") + '</td></tr>';
+    html += '<tr><td style="border:1px solid #ccc;padding:4px 6px;font-size:10px">' + (tb[5]||"-") + '</td></tr>';
+    html += '<tr><td class="arbol-bisabuelo" rowspan="2">' + (b[5]||"-") + '</td>';
+    html += '<td style="border:1px solid #ccc;padding:4px 6px;font-size:10px">' + (tb[6]||"-") + '</td></tr>';
+    html += '<tr><td style="border:1px solid #ccc;padding:4px 6px;font-size:10px">' + (tb[7]||"-") + '</td></tr>';
+    html += '</tbody></table></div>';
+    html += '<div class="arbol-labels" style="grid-template-columns:repeat(5,1fr)"><div>Caballo</div><div>Padres</div><div>Abuelos</div><div>Bisabuelos</div><div>Tatarabuelos</div></div>';
+  } else {
+    // 4 generaciones normal
+    html += '<tr>';
+    html += '<td class="arbol-caballo" rowspan="8">' + nombre + (etiqueta ? '<br><small style="font-weight:400;color:#666;font-size:9px">' + etiqueta + '</small>' : '') + '</td>';
+    html += '<td class="arbol-padre" rowspan="4">' + padre + '</td>';
+    html += '<td class="arbol-abuelo" rowspan="2">' + (a[0]||"-") + '</td>';
+    html += '<td class="arbol-bisabuelo">' + (a[2]||"-") + '</td>';
+    html += '</tr><tr><td class="arbol-bisabuelo">' + (a[3]||"-") + '</td></tr>';
+    html += '<tr><td class="arbol-abuelo" rowspan="2">' + (a[1]||"-") + '</td>';
+    html += '<td class="arbol-bisabuelo">' + (a[4]||"-") + '</td>';
+    html += '</tr><tr><td class="arbol-bisabuelo">' + (a[5]||"-") + '</td></tr>';
+    html += '<tr><td class="arbol-padre" rowspan="4">' + madre + '</td>';
+    html += '<td class="arbol-abuelo" rowspan="2">' + (b[0]||"-") + '</td>';
+    html += '<td class="arbol-bisabuelo">' + (b[2]||"-") + '</td>';
+    html += '</tr><tr><td class="arbol-bisabuelo">' + (b[3]||"-") + '</td></tr>';
+    html += '<tr><td class="arbol-abuelo" rowspan="2">' + (b[1]||"-") + '</td>';
+    html += '<td class="arbol-bisabuelo">' + (b[4]||"-") + '</td>';
+    html += '</tr><tr><td class="arbol-bisabuelo">' + (b[5]||"-") + '</td></tr>';
+    html += '</tbody></table></div>';
+    html += '<div class="arbol-labels"><div>Caballo</div><div>Padres</div><div>Abuelos</div><div>Bisabuelos</div></div>';
+  }
   return html;
 }
 
@@ -798,6 +849,23 @@ function eliminarSeg(i) {
 }
 
 // ===== SIMULADOR =====
+// Tatarabuelos conocidos por potro/yegua
+var TATARABUELOS = {
+  "Delito":      {ap:"Estribillo/Lista/Nipan/Naranjerita/Estribillo/Ociosa/Retoque/Iberia", am:"Estribillo/Ociosa/Retoque/Iberia/—/—/—/—"},
+  "Avispado":    {ap:"Arauco/Sorocha/Escandalo/Que Luna/Plebiscito/Juliana/Rangoso/Directora", am:"Plebiscito/Juliana/Rangoso/Directora/—/—/—/—"},
+  "Veneno":      {ap:"Retoque/Que Chica/Puelche/Ociosa/Esperando/Sauzala/Roto Choro/Ricura", am:"Esperando/Sauzala/Roto Choro/Ricura/Roncador/Pistolera/Roncador/Risquera"},
+  "Don Gustavo": {ap:"Atento/Costurera/Taconeo/Maiga/Esperando/Guinda/El Tacon/Estupenda", am:"Esperando/Guinda/Malulo/Gabarra/Bellaco/Na Juana/Albertio/Topeadura"},
+  "Filamento":   {ap:"Esperando/Guinda/Peine/Barquilla/Taco/Remolienda/Esperando/Guinda", am:"Taco/Remolienda/Esperando/Guinda/Estribillo/Empenosa/Choclo/Hechicera"},
+  "Tincada":     {ap:"Amanecido/Pegualera/Vivaracho/Remolienda/Faustino/Batalla/Pial/Felpa", am:"Esperando/Guinda/El Tacon/Estupenda/Taco/Burlona/Entusiasmo/Tachuela"},
+  "Trasnochada": {ap:"Estribillo/Sombra/Brillazon/Pistolera/Estribo/Reserva/No me Toques/Fueguina", am:"Intruso/Mentirosa/Vamos Viendo/Ona Tere/Bellaco/Intrusa/Estribillo/Embusterona"},
+  "Cuentista":   {ap:"Bellaco/Na Juana/Esperando/Norta/Taco/Percala/Imperio/Norta", am:"Escandalo/Argucia/Talento/Huachaca/—/—/—/—"},
+  "Pillastrina": {ap:"Bellaco/Na Juana/Esperando/Norta/Taco/Percala/Imperio/Norta", am:"Taco/Remolienda/Esperando/Guinda/Estribillo/Empenosa/Choclo/Hechicera"},
+  "Represa":     {ap:"Chamanto/Mensajera/Escandalo/Vengadora/Pehual/Querendona/Regalado/Nahuelbuta", am:"Chamullo/Pitica/Estacon/Sonadora/Taco/Remolienda/Puma/Rampla"},
+  "Rustica":     {ap:"Taco/Que Luna/Enlitrado II/Melinka/Rigor/Talavera/Borracho en Dgo./Endemonia", am:"Esperando/Guinda/Rotoso/Leyenda/Estribillo/Empenosa/Lienzo/China"},
+  "Protesta":    {ap:"Arauco/Sorocha/Quillacon/Picardia/—/—/—/—", am:"Roto Choro/Maca/Eslabon/Chispa/—/—/—/—"},
+  "Chinchilla":  {ap:"Huasamaco/Santa Barbara/Domino/Escupeta/—/—/—/—", am:"Taco/Percala/Rival/Burlesca/—/—/—/—"}
+};
+
 function simular() {
   var pv = document.getElementById("sel-padre").value.split("|");
   var mv = document.getElementById("sel-madre").value.split("|");
@@ -810,13 +878,22 @@ function simular() {
   var mAM = (mv[4]||"").split("/").map(function(s){return s.trim();});
   var apComb = pPadre+"/"+pMadre+"/"+pAP[0]+"/"+pAP[1]+"/"+pAM[0]+"/"+pAM[1];
   var amComb = mPadre+"/"+mMadre+"/"+mAP[0]+"/"+mAP[1]+"/"+mAM[0]+"/"+mAM[1];
+
+  // Tatarabuelos
+  var tatPadre = TATARABUELOS[pN] || {};
+  var tatMadre = TATARABUELOS[mN] || {};
+
   var pAll = [pN,pPadre,pMadre].concat(pAP).concat(pAM).map(function(s){return s.toLowerCase().trim();});
   var mAll = [mN,mPadre,mMadre].concat(mAP).concat(mAM).map(function(s){return s.toLowerCase().trim();});
   var consang = pAll.filter(function(a){return a && a.length > 2 && mAll.indexOf(a) > -1;});
+
   var res = document.getElementById("sim-result");
   res.style.display = "block";
   document.getElementById("sim-titulo").textContent = pN + " x " + mN;
-  document.getElementById("sim-arbol").innerHTML = arbolHTML("Cria proyectada", pN, mN, apComb, amComb, pN + " x " + mN);
+  document.getElementById("sim-arbol").innerHTML = arbolHTML(
+    "Cria proyectada", pN, mN, apComb, amComb, pN + " x " + mN,
+    tatPadre.ap || "", tatMadre.am || ""
+  );
   var cw = document.getElementById("sim-consang");
   if (consang.length > 0) {
     cw.style.display = "block";
@@ -843,11 +920,81 @@ if (tbody) {
   }).join("");
 }
 
+// ===== REGISTROS DE SALUD =====
+var registrosSalud = JSON.parse(localStorage.getItem("azSalud") || "[]");
+
 function guardarEvento() {
+  var cab = document.getElementById("reg-cab").value;
+  var tipo = document.querySelector("#stable-reg select:nth-of-type(2)") ?
+    document.querySelectorAll("#stable-reg select")[1].value : "Desparasitacion";
+  var fecha = document.getElementById("reg-cab").closest(".card").querySelector("input[type=date]").value;
+  var resp = document.querySelectorAll("#stable-reg input[type=text]")[0].value;
+  var detalle = document.querySelector("#stable-reg textarea").value;
+  var evento = {cab:cab, tipo:tipo, fecha:fecha, resp:resp, detalle:detalle, ts:Date.now()};
+  registrosSalud.unshift(evento);
+  localStorage.setItem("azSalud", JSON.stringify(registrosSalud));
+  actualizarTablasSalud();
   var ok = document.getElementById("reg-ok");
   ok.style.display = "block";
   setTimeout(function(){ok.style.display = "none";}, 3000);
 }
+
+function actualizarTablasSalud() {
+  // Actualizar tabla desparasitaciones con registros reales
+  var despRegistros = registrosSalud.filter(function(r){return r.tipo === "Desparasitacion";});
+  var tbody = document.getElementById("desp-tbody");
+  if (!tbody) return;
+  // Reconstruir con datos reales si existen
+  var hoy = new Date();
+  var todosDesp2 = ["Tincada","Trasnochada","Cuentista","Pillastrina","Represa","Rustica","Protesta","Chinchilla T.E.","Delito","Avispado","Veneno","Don Gustavo","Filamento"];
+  tbody.innerHTML = todosDesp2.map(function(n, i) {
+    var regCab = despRegistros.find(function(r){return r.cab === n;});
+    var ul, pr;
+    if (regCab) {
+      ul = new Date(regCab.fecha);
+      pr = new Date(ul); pr.setMonth(pr.getMonth() + 3);
+    } else {
+      ul = new Date(2026, 0, 5 + i * 6);
+      pr = new Date(ul); pr.setMonth(pr.getMonth() + 3);
+    }
+    var diff = Math.ceil((pr - hoy) / 86400000);
+    var est = diff < 0 ? '<span class="badge" style="background:#ffebee;color:#c62828">Vencido</span>' :
+              diff < 15 ? '<span class="badge b-preg">En ' + diff + ' dias</span>' :
+              '<span class="badge b-cria">Al dia</span>';
+    return '<tr><td><b>' + n + '</b></td><td>' + ul.toLocaleDateString("es-CL") + '</td><td>' + pr.toLocaleDateString("es-CL") + '</td><td>' + est + '</td></tr>';
+  }).join("");
+
+  // Actualizar vacunas
+  var vacEl = document.querySelector("#stable-vac .card");
+  if (vacEl) {
+    var vacRegistros = registrosSalud.filter(function(r){return r.tipo === "Vacuna";});
+    if (vacRegistros.length > 0) {
+      vacEl.innerHTML = '<div class="card-title">Vacunas</div><div style="overflow-x:auto"><table class="tbl"><thead><tr><th>Caballo</th><th>Fecha</th><th>Detalle</th><th>Responsable</th></tr></thead><tbody>' +
+        vacRegistros.map(function(r){
+          return '<tr><td><b>'+r.cab+'</b></td><td>'+r.fecha+'</td><td>'+r.detalle+'</td><td>'+r.resp+'</td></tr>';
+        }).join("") + '</tbody></table></div>';
+    } else {
+      vacEl.innerHTML = '<div class="card-title">Vacunas</div><div style="font-size:12px;color:var(--text-3);padding:10px 0">Sin registros. Usa Registrar para agregar.</div>';
+    }
+  }
+
+  // Actualizar lesiones
+  var lesEl = document.querySelector("#stable-les .card");
+  if (lesEl) {
+    var lesRegistros = registrosSalud.filter(function(r){return r.tipo === "Lesion" || r.tipo === "Tratamiento";});
+    if (lesRegistros.length > 0) {
+      lesEl.innerHTML = '<div class="card-title">Lesiones y tratamientos</div><div style="overflow-x:auto"><table class="tbl"><thead><tr><th>Caballo</th><th>Tipo</th><th>Fecha</th><th>Detalle</th></tr></thead><tbody>' +
+        lesRegistros.map(function(r){
+          return '<tr><td><b>'+r.cab+'</b></td><td>'+r.tipo+'</td><td>'+r.fecha+'</td><td>'+r.detalle+'</td></tr>';
+        }).join("") + '</tbody></table></div>';
+    } else {
+      lesEl.innerHTML = '<div class="card-title">Lesiones activas</div><div style="font-size:12px;color:var(--text-3);padding:10px 0">Sin lesiones activas.</div>';
+    }
+  }
+}
+
+// Cargar registros al iniciar
+actualizarTablasSalud();
 
 // ===== CAMBIO DE CLAVE =====
 var newPin = "", confPin = "";
