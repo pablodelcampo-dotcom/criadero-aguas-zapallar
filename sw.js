@@ -1,4 +1,4 @@
-const CACHE_NAME = "criadero-az-v20260411-001";
+const CACHE_NAME = "criadero-az-v20260411-002";
 const urlsToCache = ["/criadero-aguas-zapallar/"];
 
 self.addEventListener("install", event => {
