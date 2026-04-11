@@ -199,7 +199,7 @@ textarea{resize:vertical;min-height:70px;}
     <div id="sec-panel" class="section on">
       <div class="stats-row">
         <div class="stat-box" onclick="navToFiltro('yegua')"><div class="stat-n">8</div><div class="stat-l">Yeguas</div></div>
-        <div class="stat-box" onclick="navToFiltro('potro')"><div class="stat-n">5</div><div class="stat-l">Potros</div></div>
+        <div class="stat-box" onclick="navToFiltro('potro')"><div class="stat-n">6</div><div class="stat-l">Potros</div></div>
         <div class="stat-box" onclick="navTo('crias',document.querySelector('.ntab[onclick*=crias]'))"><div class="stat-n">4</div><div class="stat-l">Crias</div></div>
         <div class="stat-box" onclick="navToPreniadas()"><div class="stat-n">2</div><div class="stat-l">Prenadas</div></div>
         <div class="stat-box" onclick="navToFiltro('caballo')"><div class="stat-n">1</div><div class="stat-l">Caballos</div></div>
@@ -737,9 +737,19 @@ var SEG_DEFAULT = [
   {cab:"Avispado",nota:"N de registro en tramite - Seguimiento Biogenes pendiente",tipo:"warn"}
 ];
 
-var savedSeg = localStorage.getItem("azSeg");
-var seguimientos = savedSeg ? JSON.parse(savedSeg) : SEG_DEFAULT.slice();
-if (!savedSeg) localStorage.setItem("azSeg", JSON.stringify(seguimientos));
+function cargarSeg() {
+  try {
+    var saved = localStorage.getItem("azSeg");
+    if (saved) {
+      var parsed = JSON.parse(saved);
+      if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+    }
+  } catch(e) {}
+  var defaults = SEG_DEFAULT.slice();
+  localStorage.setItem("azSeg", JSON.stringify(defaults));
+  return defaults;
+}
+var seguimientos = cargarSeg();
 
 function renderSeg() {
   var lista = document.getElementById("seg-lista");
@@ -764,12 +774,18 @@ function mostrarFormSeg() {
   document.getElementById("form-seg").style.display = "block";
 }
 
+function guardarSeg() {
+  try {
+    localStorage.setItem("azSeg", JSON.stringify(seguimientos));
+  } catch(e) {}
+}
+
 function agregarSeg() {
   var cab = document.getElementById("seg-caballo").value;
   var nota = document.getElementById("seg-nota").value.trim();
   if (!nota) return;
   seguimientos.push({cab:cab, nota:nota, tipo:"warn"});
-  localStorage.setItem("azSeg", JSON.stringify(seguimientos));
+  guardarSeg();
   document.getElementById("form-seg").style.display = "none";
   document.getElementById("seg-nota").value = "";
   renderSeg();
@@ -777,7 +793,7 @@ function agregarSeg() {
 
 function eliminarSeg(i) {
   seguimientos.splice(i, 1);
-  localStorage.setItem("azSeg", JSON.stringify(seguimientos));
+  guardarSeg();
   renderSeg();
 }
 
