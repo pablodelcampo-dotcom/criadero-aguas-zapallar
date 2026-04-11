@@ -453,7 +453,7 @@ textarea { resize: vertical; min-height: 70px; }
       <div class="stats-row">
         <div class="stat-box" style="cursor:pointer" onclick="navToFiltro('yegua')"><div class="stat-n">8</div><div class="stat-l">Yeguas</div></div>
         <div class="stat-box" style="cursor:pointer" onclick="navToFiltro('potro')"><div class="stat-n">5</div><div class="stat-l">Potros</div></div>
-        <div class="stat-box" style="cursor:pointer" onclick="navTo('crias',document.querySelector('.ntab[onclick*=crias]'))"><div class="stat-n">3</div><div class="stat-l">Crías 2025</div></div>
+        <div class="stat-box" style="cursor:pointer" onclick="navTo('crias',document.querySelector('.ntab[onclick*=crias]'))"><div class="stat-n">4</div><div class="stat-l">Crías</div></div>
         <div class="stat-box" style="cursor:pointer" onclick="navToPreñadas()"><div class="stat-n">2</div><div class="stat-l">Preñadas</div></div>
       </div>
       <div class="card">
@@ -508,7 +508,7 @@ textarea { resize: vertical; min-height: 70px; }
     <!-- CRÍAS -->
     <div id="sec-crias" class="section">
       <div class="card">
-        <div class="card-title">Crías nacidas en el haras</div>
+        <div class="card-title">Crías nacidas en el criadero</div>
         <div style="overflow-x:auto">
         <table class="tbl">
           <thead><tr><th>Nombre</th><th>F. Nacimiento</th><th>Padre</th><th>Madre</th><th>Sexo</th></tr></thead>
@@ -516,6 +516,7 @@ textarea { resize: vertical; min-height: 70px; }
             <tr><td><b>Cuento Loco</b></td><td>12/11/2025</td><td>Chiloco <span class="badge b-camp">3er Camp. 2025</span></td><td>Pillastrina</td><td><span class="badge b-m">Potrillo</span></td></tr>
             <tr><td><b>Cuento Falso</b></td><td>28/12/2025</td><td>Estancado</td><td>Cuentista</td><td><span class="badge b-m">Potrillo</span></td></tr>
             <tr><td><b>Pironela</b></td><td>02/10/2025</td><td>Peleco Mono Mono</td><td>Las Vertientes Pirinola</td><td><span class="badge b-f">Potranca</span></td></tr>
+            <tr><td><b>Potranca Cacique</b></td><td>~Abril 2024</td><td>Cacique</td><td>Chinchilla T.E.</td><td><span class="badge b-f">Potranca</span></td></tr>
           </tbody>
         </table>
         </div>
@@ -896,24 +897,25 @@ function confirmPin() {
 
 // ── DATOS ──
 const caballos = [
-  {id:"tincada",nombre:"Tincada",n:"265319",criadero:"Los Maquis",fn:"23/10/2016",sexo:"f",color:"Mulato",padre:"Regalon",madre:"Tentaita",ap:"Remehue / Rezongona",am:"Estruendo / Tentacion",rol:"yegua",extra:"preg"},
-  {id:"trasnochada",nombre:"Trasnochada",n:"269368",criadero:"Santa Clara de Huintil",fn:"20/12/2015",sexo:"f",color:"Colorado",padre:"Festival",madre:"Incauta",ap:"Escritor / Bramera",am:"Incauto / Bienvenida",rol:"yegua",extra:""},
-  {id:"cuentista",nombre:"Cuentista",n:"325214",criadero:"Doña Angeles",fn:"24/09/2021",sexo:"f",color:"Bayo",padre:"Cuenta Cuentos",madre:"Concubina",ap:"Malulo / Ladera",am:"Estruendo / —",rol:"yegua",extra:"cria"},
-  {id:"pillastrina",nombre:"Pillastrina",n:"295367",criadero:"Agua de los Campos",fn:"28/12/2020",sexo:"f",color:"Mulato",padre:"Cuenta Cuentos",madre:"Pellejuda",ap:"Malulo / Ladera",am:"Chamullo / Negrita",rol:"yegua",extra:"cria"},
-  {id:"represa",nombre:"Represa",n:"244629",criadero:"Grosella",fn:"26/01/2014",sexo:"f",color:"Colorado",padre:"Afecto",madre:"Lamparita",ap:"Plebiscito / Guadalupe",am:"Charango / Bamba",rol:"yegua",extra:""},
-  {id:"rustica",nombre:"Rústica",n:"295365",criadero:"Agua de los Campos",fn:"19/10/2020",sexo:"f",color:"Alazan",padre:"Malambo",madre:"Rutera",ap:"Talento / Mordaza",am:"Canteado / Roteria",rol:"yegua",extra:""},
-  {id:"protesta",nombre:"Protesta",n:"285773",criadero:"Las Terrazas",fn:"2019",sexo:"f",color:"—",padre:"Ronaldo",madre:"Justiciera",ap:"Requinto / Raptora",am:"Refran / Distinguida",rol:"yegua",extra:""},
-  {id:"chinchilla",nombre:"Chinchilla T.E.",n:"213944",criadero:"Santa Elba",fn:"2010",sexo:"f",color:"—",padre:"El Taita",madre:"Chupilca",ap:"Rotoso / Tranquera",am:"Bellaco / Alqueria",rol:"yegua",extra:"preg"},
-  {id:"delito",nombre:"Delito",n:"341411",criadero:"—",fn:"11/11/2023",sexo:"m",color:"Negro",padre:"Fantastico",madre:"Justicia",ap:"Escorpion / Cachita",am:"Escandalo / Revista",rol:"potro",rango:1,extra:""},
-  {id:"avispado",nombre:"Avispado",n:"En trámite",criadero:"Casas del Parque",fn:"03/11/2024",sexo:"m",color:"Negro",padre:"Firpo",madre:"Pascuala",ap:"Requinto / Coqueta",am:"Carpincho / Replica",rol:"potro",rango:2,extra:""},
-  {id:"veneno",nombre:"Veneno",n:"264671",criadero:"Las Callanas",fn:"11/09/2015",sexo:"m",color:"Colorado",padre:"Bajativo",madre:"Rosquera",ap:"Capuchino / Desganada",am:"Pretal / Risquera",rol:"potro",rango:3,extra:""},
-  {id:"dongustavo",nombre:"Don Gustavo",n:"334579",criadero:"Las Callanas",fn:"18/08/2020",sexo:"m",color:"Alazan",padre:"Caballero",madre:"Cachetada",ap:"Contulmo / Minga",am:"Guindao / Palometa",rol:"potro",rango:4,extra:""},
-  {id:"filamento",nombre:"Filamento",n:"312625",criadero:"Agua de los Campos",fn:"26/12/2022",sexo:"m",color:"Mulato",padre:"Topeando",madre:"Pellejuda",ap:"Canteado / Topeadura",am:"Chamullo / Negrita",rol:"potro",rango:5,extra:""},
-  {id:"inquieto",nombre:"Inquieto",n:"241280",criadero:"Los Gomeros",fn:"10/11/2013",sexo:"m",color:"Mulato",padre:"Curioso",madre:"Gotita",ap:"Fogoso / Puntilla",am:"Capuchino / La Secretada",rol:"norep",extra:"cast"},
-  {id:"aletazo",nombre:"Aletazo II",n:"293176",criadero:"Las Callanas",fn:"2016",sexo:"m",color:"—",padre:"Bajativo",madre:"Cortita",ap:"Capuchino / Desganada",am:"Malulo / Cucha Linda",rol:"potro",extra:""},
-  {id:"cuentoloco",nombre:"Cuento Loco",n:"—",criadero:"Aguas de Zapallar",fn:"12/11/2025",sexo:"m",color:"—",padre:"Chiloco",madre:"Pillastrina",ap:"Estruendo / Pirateada",am:"Cuenta Cuentos / Pellejuda",rol:"cria",extra:""},
-  {id:"cuentofalso",nombre:"Cuento Falso",n:"—",criadero:"Aguas de Zapallar",fn:"28/12/2025",sexo:"m",color:"—",padre:"Estancado",madre:"Cuentista",ap:"Estafado / Tanda",am:"Cuenta Cuentos / Concubina",rol:"cria",extra:""},
-  {id:"pironela",nombre:"Pironela",n:"—",criadero:"Aguas de Zapallar",fn:"02/10/2025",sexo:"f",color:"—",padre:"Peleco Mono Mono",madre:"Las Vertientes Pirinola",ap:"Requinto / Estupenda",am:"Piropero / Tormenta",rol:"cria",extra:""},
+  {id:"tincada",nombre:"Tincada",n:"265319",criadero:"Los Maquis",fn:"23/10/2016",sexo:"f",color:"Mulato",padre:"Regalon",madre:"Tentaita",ap:"Regalon/Tentaita/Remehue/Rezongona/Estruendo/Tentacion",am:"Regalon/Tentaita/Amanecido/Pegualera/Vivaracho/Remolienda",rol:"yegua",extra:"preg"},
+  {id:"trasnochada",nombre:"Trasnochada",n:"269368",criadero:"Santa Clara de Huintil",fn:"20/12/2015",sexo:"f",color:"Colorado",padre:"Festival",madre:"Incauta",ap:"Escritor/Bramera/Estribillo/Sombra/Brillazon/Pistolera",am:"Incauto/Bienvenida/Intruso/Mentirosa/Vamos Viendo/Oña Tere",rol:"yegua",extra:""},
+  {id:"cuentista",nombre:"Cuentista",n:"325214",criadero:"Doña Angeles",fn:"24/09/2021",sexo:"f",color:"Bayo",padre:"Cuenta Cuentos",madre:"Concubina",ap:"Malulo/Ladera/Bellaco/Ña Juana/Esperando/Norta",am:"Estruendo/Reg.Inexistente/Escandalo/Argucia/Reg.Inex./Reg.Inex.",rol:"yegua",extra:"cria"},
+  {id:"pillastrina",nombre:"Pillastrina",n:"295367",criadero:"Agua de los Campos",fn:"28/12/2020",sexo:"f",color:"Mulato",padre:"Cuenta Cuentos",madre:"Pellejuda",ap:"Malulo/Ladera/Bellaco/Ña Juana/Esperando/Norta",am:"Chamullo/Negrita/Taco/Remolienda/Esperando/Guinda",rol:"yegua",extra:"cria"},
+  {id:"represa",nombre:"Represa",n:"244629",criadero:"Grosella",fn:"26/01/2014",sexo:"f",color:"Colorado",padre:"Afecto",madre:"Lamparita",ap:"Plebiscito/Guadalupe/Chamanto/Mensajera/Escandalo/Vengadora",am:"Charango/Bamba/Chamullo/Pitica/Estacon/Soñadora",rol:"yegua",extra:""},
+  {id:"rustica",nombre:"Rústica",n:"295365",criadero:"Agua de los Campos",fn:"19/10/2020",sexo:"f",color:"Alazan",padre:"Malambo",madre:"Rutera",ap:"Talento/Mordaza/Taco/Que Luna/Enlitrado II/Melinka",am:"Canteado/Roteria/Esperando/Guinda/Rotoso/Leyenda",rol:"yegua",extra:""},
+  {id:"protesta",nombre:"Protesta",n:"285773",criadero:"Las Terrazas",fn:"2019",sexo:"f",color:"—",padre:"Ronaldo",madre:"Justiciera",ap:"Requinto/Raptora/Arauco/Sorocha/Quillacon/Picardia",am:"Refran/Distinguida/Roto Choro/Maca/Eslabon/Chispa",rol:"yegua",extra:""},
+  {id:"chinchilla",nombre:"Chinchilla T.E.",n:"213944",criadero:"Santa Elba",fn:"2010",sexo:"f",color:"—",padre:"El Taita",madre:"Chupilca",ap:"Rotoso/Tranquera/Huasamaco/Santa Barbara/Domino/Escupeta",am:"Bellaco/Alqueria/Taco/Percala/Rival/Burlesca",rol:"yegua",extra:"preg"},
+  {id:"delito",nombre:"Delito",n:"341411",criadero:"—",fn:"11/11/2023",sexo:"m",color:"Negro",padre:"Fantastico",madre:"Justicia",ap:"Escorpion/Cachita/Estribillo/Lista/Ñipan/Naranjerita",am:"Escandalo/Revista/Estribillo/Ociosa/Retoque/Iberia",rol:"potro",rango:1,extra:""},
+  {id:"avispado",nombre:"Avispado",n:"En trámite",criadero:"Casas del Parque",fn:"03/11/2024",sexo:"m",color:"Negro",padre:"Firpo",madre:"Pascuala",ap:"Requinto/Coqueta/Arauco/Sorocha/Escandalo/Que Luna",am:"Carpincho/Replica/Plebiscito/Juliana/Rangoso/Directora",rol:"potro",rango:2,extra:""},
+  {id:"veneno",nombre:"Veneno",n:"264671",criadero:"Las Callanas",fn:"11/09/2015",sexo:"m",color:"Colorado",padre:"Bajativo",madre:"Rosquera",ap:"Capuchino/Desganada/Retoque/Que Chica/Puelche/Ociosa",am:"Pretal/Risquera/Esperando/Sauzala/Roto Choro/Ricura",rol:"potro",rango:3,extra:""},
+  {id:"dongustavo",nombre:"Don Gustavo",n:"334579",criadero:"Las Callanas",fn:"18/08/2020",sexo:"m",color:"Alazan",padre:"Caballero",madre:"Cachetada",ap:"Contulmo/Minga/Atento/Costurera/Taconeo/Maiga",am:"Guindao/Palometa/Esperando/Guinda/Malulo/Gabarra",rol:"potro",rango:4,extra:""},
+  {id:"filamento",nombre:"Filamento",n:"312625",criadero:"Agua de los Campos",fn:"26/12/2022",sexo:"m",color:"Mulato",padre:"Topeando",madre:"Pellejuda",ap:"Canteado/Topeadura/Esperando/Guinda/Peine/Barquilla",am:"Chamullo/Negrita/Taco/Remolienda/Esperando/Guinda",rol:"potro",rango:5,extra:""},
+  {id:"inquieto",nombre:"Inquieto",n:"241280",criadero:"Los Gomeros",fn:"10/11/2013",sexo:"m",color:"Mulato",padre:"Curioso",madre:"Gotita",ap:"Fogoso/Puntilla/Rio Negro/Barricada/Escandalo/Deidamia",am:"Capuchino/La Secretada/Retoque/Que Chica/Chamanto/Endemonia",rol:"norep",extra:"cast"},
+  {id:"aletazo",nombre:"Aletazo II",n:"293176",criadero:"Las Callanas",fn:"2016",sexo:"m",color:"—",padre:"Bajativo",madre:"Cortita",ap:"Capuchino/Desganada/Retoque/Que Chica/Puelche/Ociosa",am:"Malulo/Cucha Linda/Bellaco/Ña Juana/Canteado/Doña Cucha",rol:"potro",extra:""},
+  {id:"cuentoloco",nombre:"Cuento Loco",n:"—",criadero:"Aguas de Zapallar",fn:"12/11/2025",sexo:"m",color:"—",padre:"Chiloco",madre:"Pillastrina",ap:"Estruendo/Pirateada/Esperando/Guinda/Malulo/Marinera",am:"Cuenta Cuentos/Pellejuda/Malulo/Ladera/Chamullo/Negrita",rol:"cria",extra:""},
+  {id:"cuentofalso",nombre:"Cuento Falso",n:"—",criadero:"Aguas de Zapallar",fn:"28/12/2025",sexo:"m",color:"—",padre:"Estancado",madre:"Cuentista",ap:"Estafado/Tanda/Estandarte/Totora/Tandeo/Revestida",am:"Cuenta Cuentos/Concubina/Malulo/Ladera/Estruendo/Reg.Inex.",rol:"cria",extra:""},
+  {id:"pironela",nombre:"Pironela",n:"—",criadero:"Aguas de Zapallar",fn:"02/10/2025",sexo:"f",color:"—",padre:"Peleco Mono Mono",madre:"Las Vertientes Pirinola",ap:"Requinto/Estupenda/Arauco/Sorocha/Estribillo/Barbara",am:"Piropero/Tormenta/Putifar/Piropera/El Taita/Sinfonia",rol:"cria",extra:""},
+  {id:"potrancacacique",nombre:"Potranca Cacique",n:"—",criadero:"Aguas de Zapallar",fn:"~Abril 2024",sexo:"f",color:"—",padre:"Cacique",madre:"Chinchilla T.E.",ap:"Espejo/Catalina/Estribillo/Alborada/Rico Raco/Camarera",am:"El Taita/Chupilca/Rotoso/Tranquera/Bellaco/Alqueria",aap:"Estribillo/Alborada",aam:"Rico Raco/Camarera",bap:"Estribo/Reserva/Nidal/Enojadita",bam:"Borracho en Dgo./Racha/Roncador/Camarilla",bmap:"Rotoso/Tranquera/Bellaco/Alqueria",bmam:"Huasamaco/Santa Barbara/Taco/Percala",rol:"cria",extra:""},
 ];
 
 function badgesHtml(c) {
@@ -922,7 +924,7 @@ function badgesHtml(c) {
   if (c.rol==="potro" && !c.rango) b += `<span class="badge b-sem">Potro</span>`;
   if (c.rol==="yegua" && c.extra==="preg") b += `<span class="badge b-preg">Preñada</span>`;
   if (c.rol==="yegua" && c.extra==="cria") b += `<span class="badge b-cria">Con cría 2025</span>`;
-  if (c.rol==="cria") b += `<span class="badge b-cria">Cría haras</span>`;
+  if (c.rol==="cria") b += `<span class="badge b-cria">Cría criadero</span>`;
   if (c.extra==="cast") b += `<span class="badge b-cast">Castrado</span>`;
   if (c.rol==="norep" && !c.extra) b += `<span class="badge b-norep">No reproductor</span>`;
   if (c.color && c.color!=="—") b += `<span class="badge" style="background:#f5f5f5;color:#555">${c.color}</span>`;
@@ -1017,16 +1019,49 @@ function filtrar(tipo, btn) {
   renderGrid(m[tipo] || caballos);
 }
 
+function arbolHTML(nombre, padre, madre, ap, am, etiqueta) {
+  const pAPar = (ap||"").split("/").map(s=>s.trim());
+  const pAMar = (am||"").split("/").map(s=>s.trim());
+  return `
+    <div style="overflow-x:auto;margin-bottom:4px">
+    <table style="border-collapse:collapse;width:100%;min-width:480px;font-size:11px">
+      <tbody>
+        <tr>
+          <td rowspan="8" style="border:1px solid #ccc;padding:8px;font-weight:600;font-size:12px;text-align:center;background:#f4f8f5;vertical-align:middle;width:18%">${nombre}${etiqueta?`<br><span style='font-size:9px;font-weight:400;color:#888'>${etiqueta}</span>`:""}</td>
+          <td rowspan="4" style="border:1px solid #ccc;padding:6px 8px;font-weight:500;vertical-align:middle;text-align:center;width:20%">${padre}</td>
+          <td rowspan="2" style="border:1px solid #ccc;padding:6px 8px;vertical-align:middle;text-align:center;width:20%">${pAPar[0]||"—"}</td>
+          <td style="border:1px solid #ccc;padding:5px 8px;vertical-align:middle;width:21%">${pAPar[2]||"—"}</td>
+        </tr>
+        <tr><td style="border:1px solid #ccc;padding:5px 8px">${pAPar[3]||"—"}</td></tr>
+        <tr>
+          <td rowspan="2" style="border:1px solid #ccc;padding:6px 8px;vertical-align:middle;text-align:center">${pAPar[1]||"—"}</td>
+          <td style="border:1px solid #ccc;padding:5px 8px">${pAMar[2]||"—"}</td>
+        </tr>
+        <tr><td style="border:1px solid #ccc;padding:5px 8px">${pAMar[3]||"—"}</td></tr>
+        <tr>
+          <td rowspan="4" style="border:1px solid #ccc;padding:6px 8px;font-weight:500;vertical-align:middle;text-align:center">${madre}</td>
+          <td rowspan="2" style="border:1px solid #ccc;padding:6px 8px;vertical-align:middle;text-align:center">${pAMar[0]||"—"}</td>
+          <td style="border:1px solid #ccc;padding:5px 8px">${pAPar[4]||"—"}</td>
+        </tr>
+        <tr><td style="border:1px solid #ccc;padding:5px 8px">${pAPar[5]||"—"}</td></tr>
+        <tr>
+          <td rowspan="2" style="border:1px solid #ccc;padding:6px 8px;vertical-align:middle;text-align:center">${pAMar[1]||"—"}</td>
+          <td style="border:1px solid #ccc;padding:5px 8px">${pAMar[4]||"—"}</td>
+        </tr>
+        <tr><td style="border:1px solid #ccc;padding:5px 8px">${pAMar[5]||"—"}</td></tr>
+      </tbody>
+    </table>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:4px;font-size:10px;color:#888;text-align:center;margin-top:2px;margin-bottom:10px">
+      <div>Caballo</div><div>Padres</div><div>Abuelos</div><div>Bisabuelos</div>
+    </div>`;
+}
+
 function showDetail(id) {
   const c = caballos.find(x=>x.id===id);
   if (!c) return;
   const avCls = c.sexo==="f" ? "av-f" : c.rol==="cria" ? "av-c" : "av-m";
   const dp = document.getElementById("detail-panel");
-
-  // Árbol genealógico estilo Biogenes
-  const pAPar = (c.ap||"").split("/").map(s=>s.trim());
-  const pAMar = (c.am||"").split("/").map(s=>s.trim());
-
   dp.innerHTML = `<div class="detail-card">
     <div class="detail-head">
       <div class="detail-av ${avCls}">${c.nombre.substring(0,2).toUpperCase()}</div>
@@ -1037,26 +1072,7 @@ function showDetail(id) {
       </div>
     </div>
     <div style="font-size:11px;font-weight:500;color:var(--verde-oscuro);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px">Genealogía</div>
-    <div style="overflow-x:auto">
-    <table style="border-collapse:collapse;width:100%;min-width:380px;font-size:11px">
-      <tbody>
-        <tr>
-          <td rowspan="4" style="border:1px solid #ccc;padding:8px;font-weight:600;font-size:12px;text-align:center;background:#f4f8f5;vertical-align:middle;width:22%">${c.nombre}</td>
-          <td rowspan="2" style="border:1px solid #ccc;padding:6px 8px;font-weight:500;vertical-align:middle;text-align:center;width:26%">${c.padre}</td>
-          <td style="border:1px solid #ccc;padding:5px 8px;vertical-align:middle">${pAPar[0]||"—"}</td>
-        </tr>
-        <tr><td style="border:1px solid #ccc;padding:5px 8px;vertical-align:middle">${pAPar[1]||"—"}</td></tr>
-        <tr>
-          <td rowspan="2" style="border:1px solid #ccc;padding:6px 8px;font-weight:500;vertical-align:middle;text-align:center">${c.madre}</td>
-          <td style="border:1px solid #ccc;padding:5px 8px;vertical-align:middle">${pAMar[0]||"—"}</td>
-        </tr>
-        <tr><td style="border:1px solid #ccc;padding:5px 8px;vertical-align:middle">${pAMar[1]||"—"}</td></tr>
-      </tbody>
-    </table>
-    </div>
-    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:4px;font-size:10px;color:#888;text-align:center;margin-top:4px">
-      <div>Caballo</div><div>Padres</div><div>Abuelos</div>
-    </div>
+    ${arbolHTML(c.nombre, c.padre, c.madre, c.ap, c.am, "")}
   </div>`;
   dp.scrollIntoView({behavior:"smooth",block:"nearest"});
 }
@@ -1173,54 +1189,18 @@ function simular() {
 }
 
 function mostrarCriaProyectada(yegua, padre, pPadre, pMadre, pAP, pAM, mPadre, mMadre, mAP, mAM) {
-  const pAPar = pAP.split("/").map(s=>s.trim());
-  const pAMar = pAM.split("/").map(s=>s.trim());
-  const mAPar = mAP.split("/").map(s=>s.trim());
-  const mAMar = mAM.split("/").map(s=>s.trim());
-
-  // Detectar consanguinidad
-  const pAll=[padre,pPadre,pMadre,...pAPar,...pAMar].map(s=>s.toLowerCase().trim());
-  const mAll=[yegua,mPadre,mMadre,...mAPar,...mAMar].map(s=>s.toLowerCase().trim());
+  const pAll=[padre,pPadre,pMadre,...pAP.split("/"),...pAM.split("/")].map(s=>s.toLowerCase().trim());
+  const mAll=[yegua,mPadre,mMadre,...mAP.split("/"),...mAM.split("/")].map(s=>s.toLowerCase().trim());
   const consang = pAll.filter(a=>a&&a.length>2&&mAll.includes(a));
+
+  const apCombinado = pPadre+"/"+pMadre+"/"+pAP.split("/")[0]+"/"+pAP.split("/")[1]+"/"+pAM.split("/")[0]+"/"+pAM.split("/")[1];
+  const amCombinado = mPadre+"/"+mMadre+"/"+mAP.split("/")[0]+"/"+mAP.split("/")[1]+"/"+mAM.split("/")[0]+"/"+mAM.split("/")[1];
 
   const panel = document.getElementById("cria-proyectada-panel");
   panel.innerHTML = `
     <div style="margin-top:12px;border-top:1px solid var(--border);padding-top:12px">
       <div style="font-size:11px;font-weight:500;color:var(--verde-oscuro);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px">Cría proyectada — ${padre} × ${yegua}</div>
-      <div style="overflow-x:auto">
-      <table style="border-collapse:collapse;width:100%;min-width:380px;font-size:11px">
-        <tbody>
-          <tr>
-            <td rowspan="8" style="border:1px solid #ccc;padding:8px;font-weight:600;font-size:12px;text-align:center;background:#f4f8f5;vertical-align:middle;width:20%">
-              Cría NN<br><span style="font-size:10px;font-weight:400;color:#666">${padre} × ${yegua}</span>
-            </td>
-            <td rowspan="4" style="border:1px solid #ccc;padding:6px 8px;font-weight:500;vertical-align:middle;text-align:center;width:22%">${padre}</td>
-            <td rowspan="2" style="border:1px solid #ccc;padding:6px 8px;vertical-align:middle;text-align:center;width:22%">${pPadre}</td>
-            <td style="border:1px solid #ccc;padding:5px 8px;vertical-align:middle">${pAPar[0]||"—"}</td>
-          </tr>
-          <tr><td style="border:1px solid #ccc;padding:5px 8px">${pAPar[1]||"—"}</td></tr>
-          <tr>
-            <td rowspan="2" style="border:1px solid #ccc;padding:6px 8px;vertical-align:middle;text-align:center">${pMadre}</td>
-            <td style="border:1px solid #ccc;padding:5px 8px">${pAMar[0]||"—"}</td>
-          </tr>
-          <tr><td style="border:1px solid #ccc;padding:5px 8px">${pAMar[1]||"—"}</td></tr>
-          <tr>
-            <td rowspan="4" style="border:1px solid #ccc;padding:6px 8px;font-weight:500;vertical-align:middle;text-align:center;background:#fce4ec22">${yegua}</td>
-            <td rowspan="2" style="border:1px solid #ccc;padding:6px 8px;vertical-align:middle;text-align:center">${mPadre}</td>
-            <td style="border:1px solid #ccc;padding:5px 8px">${mAPar[0]||"—"}</td>
-          </tr>
-          <tr><td style="border:1px solid #ccc;padding:5px 8px">${mAPar[1]||"—"}</td></tr>
-          <tr>
-            <td rowspan="2" style="border:1px solid #ccc;padding:6px 8px;vertical-align:middle;text-align:center">${mMadre}</td>
-            <td style="border:1px solid #ccc;padding:5px 8px">${mAMar[0]||"—"}</td>
-          </tr>
-          <tr><td style="border:1px solid #ccc;padding:5px 8px">${mAMar[1]||"—"}</td></tr>
-        </tbody>
-      </table>
-      </div>
-      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:4px;font-size:10px;color:#888;text-align:center;margin-top:4px">
-        <div>Cría</div><div>Padres</div><div>Abuelos</div><div>Bisabuelos</div>
-      </div>
+      ${arbolHTML("Cría NN", padre, yegua, apCombinado, amCombinado, padre+" × "+yegua)}
       ${consang.length>0 ? `<div style="background:#fff3e0;border:1px solid #ffb74d;border-radius:8px;padding:8px 10px;font-size:11px;color:#e65100;margin-top:8px">Ancestros comunes: ${consang.map(s=>s.charAt(0).toUpperCase()+s.slice(1)).join(", ")}. Evalúe consanguinidad.</div>` : ""}
     </div>
   `;
