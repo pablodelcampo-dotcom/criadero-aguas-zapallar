@@ -452,7 +452,7 @@ textarea { resize: vertical; min-height: 70px; }
     <div id="sec-panel" class="section on">
       <div class="stats-row">
         <div class="stat-box"><div class="stat-n">8</div><div class="stat-l">Yeguas</div></div>
-        <div class="stat-box"><div class="stat-n">5</div><div class="stat-l">Sementales</div></div>
+        <div class="stat-box"><div class="stat-n">5</div><div class="stat-l">Potroes</div></div>
         <div class="stat-box"><div class="stat-n">3</div><div class="stat-l">Crías 2025</div></div>
         <div class="stat-box"><div class="stat-n">2</div><div class="stat-l">Preñadas</div></div>
       </div>
@@ -466,7 +466,7 @@ textarea { resize: vertical; min-height: 70px; }
         <div class="alert-item"><div class="a-dot a-dot-warn"></div><div><div class="a-title">Avispado — N° de registro en trámite</div><div class="a-sub">Seguimiento Biogenes pendiente</div></div></div>
       </div>
       <div class="card">
-        <div class="card-title">Sementales — ranking comercial</div>
+        <div class="card-title">Potroes — ranking comercial</div>
         <div class="sem-rank">
           <div class="sem-card top"><div class="sem-num">#1 Comercial</div><div class="sem-name">Delito</div><div class="sem-sub">N° 341411 · 2023</div></div>
           <div class="sem-card"><div class="sem-num">#2</div><div class="sem-name">Avispado</div><div class="sem-sub">Casas del Parque · 2024</div></div>
@@ -482,7 +482,7 @@ textarea { resize: vertical; min-height: 70px; }
       <div class="filtros">
         <button class="fbtn on" onclick="filtrar('todos',this)">Todos</button>
         <button class="fbtn" onclick="filtrar('yegua',this)">Yeguas</button>
-        <button class="fbtn" onclick="filtrar('semental',this)">Sementales</button>
+        <button class="fbtn" onclick="filtrar('potro',this)">Potroes</button>
         <button class="fbtn" onclick="filtrar('cria',this)">Crías</button>
         <button class="fbtn" onclick="filtrar('norep',this)">No reprod.</button>
       </div>
@@ -540,7 +540,7 @@ textarea { resize: vertical; min-height: 70px; }
         <div class="card-title">Simulador de cruces</div>
         <div class="form-row" style="margin-bottom:10px">
           <div class="form-group">
-            <div class="form-lbl">Semental</div>
+            <div class="form-lbl">Potro</div>
             <select id="sel-padre">
               <option value="Delito|Fantastico|Justicia|Escorpion/Cachita|Escandalo/Revista">Delito (#1)</option>
               <option value="Avispado|Firpo|Pascuala|Requinto/Coqueta|Carpincho/Replica">Avispado (#2)</option>
@@ -880,11 +880,11 @@ const caballos = [
   {id:"rustica",nombre:"Rústica",n:"295365",criadero:"Agua de los Campos",fn:"19/10/2020",sexo:"f",color:"Alazan",padre:"Malambo",madre:"Rutera",ap:"Talento / Mordaza",am:"Canteado / Roteria",rol:"yegua",extra:""},
   {id:"protesta",nombre:"Protesta",n:"285773",criadero:"Las Terrazas",fn:"2019",sexo:"f",color:"—",padre:"Ronaldo",madre:"Justiciera",ap:"Requinto / Raptora",am:"Refran / Distinguida",rol:"yegua",extra:""},
   {id:"chinchilla",nombre:"Chinchilla T.E.",n:"213944",criadero:"Santa Elba",fn:"2010",sexo:"f",color:"—",padre:"El Taita",madre:"Chupilca",ap:"Rotoso / Tranquera",am:"Bellaco / Alqueria",rol:"yegua",extra:"preg"},
-  {id:"delito",nombre:"Delito",n:"341411",criadero:"—",fn:"11/11/2023",sexo:"m",color:"Negro",padre:"Fantastico",madre:"Justicia",ap:"Escorpion / Cachita",am:"Escandalo / Revista",rol:"semental",rango:1,extra:""},
-  {id:"avispado",nombre:"Avispado",n:"En trámite",criadero:"Casas del Parque",fn:"03/11/2024",sexo:"m",color:"Negro",padre:"Firpo",madre:"Pascuala",ap:"Requinto / Coqueta",am:"Carpincho / Replica",rol:"semental",rango:2,extra:""},
-  {id:"veneno",nombre:"Veneno",n:"264671",criadero:"Las Callanas",fn:"11/09/2015",sexo:"m",color:"Colorado",padre:"Bajativo",madre:"Rosquera",ap:"Capuchino / Desganada",am:"Pretal / Risquera",rol:"semental",rango:3,extra:""},
-  {id:"dongustavo",nombre:"Don Gustavo",n:"334579",criadero:"Las Callanas",fn:"18/08/2020",sexo:"m",color:"Alazan",padre:"Caballero",madre:"Cachetada",ap:"Contulmo / Minga",am:"Guindao / Palometa",rol:"semental",rango:4,extra:""},
-  {id:"filamento",nombre:"Filamento",n:"312625",criadero:"Agua de los Campos",fn:"26/12/2022",sexo:"m",color:"Mulato",padre:"Topeando",madre:"Pellejuda",ap:"Canteado / Topeadura",am:"Chamullo / Negrita",rol:"semental",rango:5,extra:""},
+  {id:"delito",nombre:"Delito",n:"341411",criadero:"—",fn:"11/11/2023",sexo:"m",color:"Negro",padre:"Fantastico",madre:"Justicia",ap:"Escorpion / Cachita",am:"Escandalo / Revista",rol:"potro",rango:1,extra:""},
+  {id:"avispado",nombre:"Avispado",n:"En trámite",criadero:"Casas del Parque",fn:"03/11/2024",sexo:"m",color:"Negro",padre:"Firpo",madre:"Pascuala",ap:"Requinto / Coqueta",am:"Carpincho / Replica",rol:"potro",rango:2,extra:""},
+  {id:"veneno",nombre:"Veneno",n:"264671",criadero:"Las Callanas",fn:"11/09/2015",sexo:"m",color:"Colorado",padre:"Bajativo",madre:"Rosquera",ap:"Capuchino / Desganada",am:"Pretal / Risquera",rol:"potro",rango:3,extra:""},
+  {id:"dongustavo",nombre:"Don Gustavo",n:"334579",criadero:"Las Callanas",fn:"18/08/2020",sexo:"m",color:"Alazan",padre:"Caballero",madre:"Cachetada",ap:"Contulmo / Minga",am:"Guindao / Palometa",rol:"potro",rango:4,extra:""},
+  {id:"filamento",nombre:"Filamento",n:"312625",criadero:"Agua de los Campos",fn:"26/12/2022",sexo:"m",color:"Mulato",padre:"Topeando",madre:"Pellejuda",ap:"Canteado / Topeadura",am:"Chamullo / Negrita",rol:"potro",rango:5,extra:""},
   {id:"inquieto",nombre:"Inquieto",n:"241280",criadero:"Los Gomeros",fn:"10/11/2013",sexo:"m",color:"Mulato",padre:"Curioso",madre:"Gotita",ap:"Fogoso / Puntilla",am:"Capuchino / La Secretada",rol:"norep",extra:"cast"},
   {id:"aletazo",nombre:"Aletazo II",n:"293176",criadero:"Las Callanas",fn:"2016",sexo:"m",color:"—",padre:"Bajativo",madre:"Cortita",ap:"Capuchino / Desganada",am:"Malulo / Cucha Linda",rol:"norep",extra:""},
   {id:"cuentoloco",nombre:"Cuento Loco",n:"—",criadero:"Aguas de Zapallar",fn:"12/11/2025",sexo:"m",color:"—",padre:"Chiloco",madre:"Pillastrina",ap:"Estruendo / Pirateada",am:"Cuenta Cuentos / Pellejuda",rol:"cria",extra:""},
@@ -894,7 +894,7 @@ const caballos = [
 
 function badgesHtml(c) {
   let b = "";
-  if (c.rol==="semental") b += `<span class="badge b-sem">#${c.rango} Semental</span>`;
+  if (c.rol==="potro") b += `<span class="badge b-sem">#${c.rango} Potro</span>`;
   if (c.rol==="yegua" && c.extra==="preg") b += `<span class="badge b-preg">Preñada</span>`;
   if (c.rol==="yegua" && c.extra==="cria") b += `<span class="badge b-cria">Con cría 2025</span>`;
   if (c.rol==="cria") b += `<span class="badge b-cria">Cría haras</span>`;
@@ -921,7 +921,7 @@ function renderGrid(lista) {
 function filtrar(tipo, btn) {
   document.querySelectorAll("#sec-caballos .fbtn").forEach(b=>b.classList.remove("on"));
   btn.classList.add("on");
-  const m = { todos: caballos, yegua: caballos.filter(c=>c.rol==="yegua"), semental: caballos.filter(c=>c.rol==="semental"), cria: caballos.filter(c=>c.rol==="cria"), norep: caballos.filter(c=>c.rol==="norep") };
+  const m = { todos: caballos, yegua: caballos.filter(c=>c.rol==="yegua"), potro: caballos.filter(c=>c.rol==="potro"), cria: caballos.filter(c=>c.rol==="cria"), norep: caballos.filter(c=>c.rol==="norep") };
   renderGrid(m[tipo] || caballos);
 }
 
