@@ -202,6 +202,7 @@ textarea{resize:vertical;min-height:70px;}
         <div class="stat-box" onclick="navToFiltro('potro')"><div class="stat-n">5</div><div class="stat-l">Potros</div></div>
         <div class="stat-box" onclick="navTo('crias',document.querySelector('.ntab[onclick*=crias]'))"><div class="stat-n">4</div><div class="stat-l">Crias</div></div>
         <div class="stat-box" onclick="navToPreniadas()"><div class="stat-n">2</div><div class="stat-l">Prenadas</div></div>
+        <div class="stat-box" onclick="navToFiltro('caballo')"><div class="stat-n">1</div><div class="stat-l">Caballos</div></div>
       </div>
       <div class="card">
         <div class="card-title" style="display:flex;justify-content:space-between;align-items:center">
@@ -247,7 +248,7 @@ textarea{resize:vertical;min-height:70px;}
         <button class="fbtn" onclick="filtrar('yegua',this)">Yeguas</button>
         <button class="fbtn" onclick="filtrar('potro',this)">Potros</button>
         <button class="fbtn" onclick="filtrar('cria',this)">Crias</button>
-        <button class="fbtn" onclick="filtrar('norep',this)">No reprod.</button>
+        <button class="fbtn" onclick="filtrar('caballo',this)">Caballos</button>
       </div>
       <div class="hgrid" id="hgrid"></div>
       <div id="cab-detalle-panel"></div>
@@ -459,7 +460,7 @@ var CABALLOS = [
   {id:"dongustavo",nombre:"Don Gustavo",n:"334579",criadero:"Las Callanas",fn:"18/08/2020",sexo:"m",padre:"Caballero",madre:"Cachetada",ap:"Contulmo/Minga/Atento/Costurera/Taconeo/Maiga",am:"Guindao/Palometa/Esperando/Guinda/Malulo/Gabarra",rol:"potro",rango:4,extra:""},
   {id:"filamento",nombre:"Filamento",n:"312625",criadero:"Agua de los Campos",fn:"26/12/2022",sexo:"m",padre:"Topeando",madre:"Pellejuda",ap:"Canteado/Topeadura/Esperando/Guinda/Peine/Barquilla",am:"Chamullo/Negrita/Taco/Remolienda/Esperando/Guinda",rol:"potro",rango:5,extra:""},
   {id:"inquieto",nombre:"Inquieto",n:"241280",criadero:"Los Gomeros",fn:"10/11/2013",sexo:"m",padre:"Curioso",madre:"Gotita",ap:"Fogoso/Puntilla/Rio Negro/Barricada/Escandalo/Deidamia",am:"Capuchino/La Secretada/Retoque/Que Chica/Chamanto/Endemonia",rol:"norep",extra:"cast"},
-  {id:"aletazo",nombre:"Aletazo II",n:"293176",criadero:"Las Callanas",fn:"2016",sexo:"m",padre:"Bajativo",madre:"Cortita",ap:"Capuchino/Desganada/Retoque/Que Chica/Puelche/Ociosa",am:"Malulo/Cucha Linda/Bellaco/Na Juana/Canteado/Dona Cucha",rol:"norep",extra:""},
+  {id:"aletazo",nombre:"Aletazo II",n:"293176",criadero:"Las Callanas",fn:"2016",sexo:"m",padre:"Bajativo",madre:"Cortita",ap:"Capuchino/Desganada/Retoque/Que Chica/Puelche/Ociosa",am:"Malulo/Cucha Linda/Bellaco/Na Juana/Canteado/Dona Cucha",rol:"potro",extra:""},
   {id:"cuentoloco",nombre:"Cuento Loco",n:"-",criadero:"Aguas de Zapallar",fn:"12/11/2025",sexo:"m",padre:"Chiloco",madre:"Pillastrina",ap:"Estruendo/Pirateada/Esperando/Guinda/Malulo/Marinera",am:"Cuenta Cuentos/Pellejuda/Malulo/Ladera/Chamullo/Negrita",rol:"cria",extra:""},
   {id:"cuentofalso",nombre:"Cuento Falso",n:"-",criadero:"Aguas de Zapallar",fn:"28/12/2025",sexo:"m",padre:"Estancado",madre:"Cuentista",ap:"Estafado/Tanda/Estandarte/Totora/Tandeo/Revestida",am:"Cuenta Cuentos/Concubina/Malulo/Ladera/Estruendo/Reg.Inex.",rol:"cria",extra:""},
   {id:"pironela",nombre:"Pironela",n:"-",criadero:"Aguas de Zapallar",fn:"02/10/2025",sexo:"f",padre:"Peleco Mono Mono",madre:"Las Vertientes Pirinola",ap:"Requinto/Estupenda/Arauco/Sorocha/Estribillo/Barbara",am:"Piropero/Tormenta/Putifar/Piropera/El Taita/Sinfonia",rol:"cria",extra:""},
@@ -656,7 +657,7 @@ function badgesHtml(c) {
   if (c.rol === "cria") b += '<span class="badge b-cria">Cria criadero</span>';
   if (c.rol === "externo") b += '<span class="badge b-ext">Padre externo</span>';
   if (c.extra === "cast") b += '<span class="badge b-cast">Castrado</span>';
-  if (c.rol === "norep" && !c.extra) b += '<span class="badge b-norep">No reproductor</span>';
+  if (c.rol === "norep" && !c.extra) b += '<span class="badge b-norep">Caballo</span>';
   return b;
 }
 
@@ -683,7 +684,8 @@ function filtrar(tipo, btn) {
     yegua: CABALLOS.filter(function(c){return c.rol === "yegua";}),
     potro: CABALLOS.filter(function(c){return c.rol === "potro";}),
     cria: CABALLOS.filter(function(c){return c.rol === "cria";}),
-    norep: CABALLOS.filter(function(c){return c.rol === "norep";})
+    norep: CABALLOS.filter(function(c){return c.rol === "norep";}),
+    caballo: CABALLOS.filter(function(c){return c.rol === "norep";})
   };
   renderGrid(mapa[tipo] || mapa.todos);
 }
