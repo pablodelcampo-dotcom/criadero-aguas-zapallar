@@ -16,19 +16,7 @@
 <title>Criadero Aguas de Zapallar</title>
 <script>
 if ("serviceWorker" in navigator) {
-  navigator.serviceWorker.register("/criadero-aguas-zapallar/sw.js").then(reg => {
-    reg.addEventListener("updatefound", () => {
-      const newWorker = reg.installing;
-      newWorker.addEventListener("statechange", () => {
-        if (newWorker.state === "installed" && navigator.serviceWorker.controller) {
-          newWorker.postMessage({action:"skipWaiting"});
-        }
-      });
-    });
-  });
-  navigator.serviceWorker.addEventListener("controllerchange", () => {
-    window.location.reload();
-  });
+  navigator.serviceWorker.register("/criadero-aguas-zapallar/sw.js");
 }
 </script>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
@@ -730,16 +718,6 @@ textarea { resize: vertical; min-height: 70px; }
 </div>
 
 <script>
-// ── VERSION Y AUTO-RELOAD ──
-const APP_VERSION = "v20260411-002";
-const storedVersion = localStorage.getItem("appVersion");
-if (storedVersion && storedVersion !== APP_VERSION) {
-  localStorage.setItem("appVersion", APP_VERSION);
-  window.location.reload(true);
-} else {
-  localStorage.setItem("appVersion", APP_VERSION);
-}
-
 // ── SEGURIDAD ──
 const ADMIN_PIN_KEY = "azAdminPin";
 const USER_PIN_KEY = "azUserPin";
