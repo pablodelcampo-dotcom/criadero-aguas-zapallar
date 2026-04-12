@@ -1139,16 +1139,19 @@ function buildGenHtml(clasif, comunes) {
     h += '<p style="font-size:12px;font-weight:600;color:#333;margin:0 0 6px">Ancestros comunes detectados:</p>';
     for (var i = 0; i < comunes.length; i++) {
       var c = comunes[i];
-      var nota = c.notaP + "x" + c.notaY;
-      var genNames = {1:"padre/madre",2:"abuelo/a",3:"bisabuelo/a",4:"tatarabuelo/a"};
-      var gP = genNames[c.notaP] || ("gen "+c.notaP);
-      var gM = genNames[c.notaY] || ("gen "+c.notaY);
-      var gen_desc = (c.notaP === c.notaY)
-        ? (c.notaP === 3 ? "bisabuelos de la cria por ambos lados"
-           : c.notaP === 4 ? "tatarabuelos de la cria por ambos lados"
-           : c.notaP === 2 ? "abuelos de la cria por ambos lados"
-           : gP+" por ambos lados")
-        : (gP+" del lado del potro / "+gM+" del lado de la yegua");
+      // Notacion clasica desde la CRIA: sumar 1 a cada lado
+      var nP = c.notaP + 1;
+      var nM = c.notaY + 1;
+      var nota = nP + "x" + nM;
+      var genNames = {2:"padre/madre",3:"abuelo/a",4:"bisabuelo/a",5:"tatarabuelo/a",6:"quintabuelo/a"};
+      var gP = genNames[nP] || ("gen "+nP);
+      var gM = genNames[nM] || ("gen "+nM);
+      var gen_desc = (nP === nM)
+        ? (nP === 3 ? "abuelos de la cria por ambos lados"
+           : nP === 4 ? "bisabuelos de la cria por ambos lados"
+           : nP === 5 ? "tatarabuelos de la cria por ambos lados"
+           : gP+" de la cria por ambos lados")
+        : (gP+" del potro / "+gM+" de la yegua");
       var star = c.esCalidad ? " — STAR Reproductor Montory" : "";
       h += '<div style="font-size:12px;padding:5px 10px;margin-bottom:4px;background:rgba(255,255,255,0.7);border-radius:6px;color:#222">';
       h += '<b>' + c.nombre + '</b> — Notacion <b>' + nota + '</b> (' + gen_desc + ')' + star;
@@ -1494,7 +1497,7 @@ var MONTORY = {
       "Segun Montory: yegua de gran importancia materna, aparece en multiples genealogias modernas.",
       "Junto con Esperando forma la pareja de reproductores mas influyente en la raza actual.",
       "Presente en Tincada, Don Gustavo, Filamento, Rustica, Chiloco y Cuento Loco del criadero.",
-      "En Filamento aparece como bisabuela por ambas lineas — linebreeding 3x3 junto con Esperando.",
+      "En Filamento aparece como tatarabuela por ambas lineas — linebreeding 3x3 junto con Esperando.",
       "Su presencia multiple en el criadero es normal y generalmente positiva.",
       "Hija de Esperando — hereda su calidad y vigor de la linea Cuevana del Tordillo Trotador.",
       "Gran transmisora de tipo y calidad a sus descendientes — linea materna de gran valor.",
@@ -1804,26 +1807,26 @@ var INBREEDING_INDIVIDUAL = {
   "Trasnochada":      {tipo:"OUTCROSS", comunes:[]},
   "Cuentista":        {tipo:"OUTCROSS", comunes:[]},
   "Pillastrina":      {tipo:"LINEBREEDING DIRIGIDO", comunes:[
-    {nombre:"Esperando",nota:"3x3",calidad:true,desc:"bisabuelo paterno y bisabuelo materno"}
+    {nombre:"Esperando",nota:"4x4",calidad:true,desc:"bisabuelo paterno y bisabuelo materno"}
   ]},
   "Represa":          {tipo:"OUTCROSS", comunes:[]},
   "Rustica":          {tipo:"OUTCROSS", comunes:[]},
   "Protesta":         {tipo:"OUTCROSS", comunes:[]},
   "Chinchilla T.E.":  {tipo:"OUTCROSS", comunes:[]},
   "Delito":           {tipo:"LINEBREEDING DIRIGIDO", comunes:[
-    {nombre:"Estribillo",nota:"3x3",calidad:true,desc:"bisabuelo paterno y bisabuelo materno"}
+    {nombre:"Estribillo",nota:"4x4",calidad:true,desc:"bisabuelo paterno y bisabuelo materno"}
   ]},
   "Avispado":         {tipo:"OUTCROSS", comunes:[]},
   "Veneno":           {tipo:"OUTCROSS", comunes:[]},
   "Don Gustavo":      {tipo:"OUTCROSS", comunes:[]},
   "Filamento":        {tipo:"LINEBREEDING DIRIGIDO", comunes:[
-    {nombre:"Esperando",nota:"3x3",calidad:true,desc:"bisabuelo paterno y bisabuelo materno"},
-    {nombre:"Guinda",nota:"3x3",calidad:true,desc:"bisabuela paterna y bisabuela materna"}
+    {nombre:"Esperando",nota:"4x4",calidad:true,desc:"bisabuelo paterno y bisabuelo materno"},
+    {nombre:"Guinda",nota:"4x4",calidad:true,desc:"bisabuela paterna y bisabuela materna"}
   ]},
   "Aletazo II":       {tipo:"OUTCROSS", comunes:[]},
   "Inquieto":         {tipo:"OUTCROSS", comunes:[]},
   "Cuento Loco":      {tipo:"LINEBREEDING DIRIGIDO", comunes:[
-    {nombre:"Malulo",nota:"3x3",calidad:true,desc:"bisabuelo paterno (via Chiloco) y bisabuelo materno (via Pillastrina)"}
+    {nombre:"Malulo",nota:"4x4",calidad:true,desc:"bisabuelo paterno (via Chiloco) y bisabuelo materno (via Pillastrina)"}
   ]},
   "Cuento Falso":     {tipo:"OUTCROSS", comunes:[]},
   "Pironela":         {tipo:"OUTCROSS", comunes:[]},
