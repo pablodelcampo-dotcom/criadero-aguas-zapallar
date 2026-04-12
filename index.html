@@ -889,7 +889,7 @@ var REPRODUCTORES_CALIDAD = [
 ];
 
 function calcularInbreeding(potro, yegua, apPotro, amPotro, apYegua, amYegua, tatPotro, tatYegua) {
-  // Construir genealogías con generación
+  // Construir genealogias con generacion
   // Gen 1: padre/madre (gen 1)
   // Gen 2: abuelos (gen 2)
   // Gen 3: bisabuelos (gen 3)
@@ -938,15 +938,15 @@ function calcularInbreeding(potro, yegua, apPotro, amPotro, apYegua, amYegua, ta
     for (var j = 0; j < linYegua.length; j++) {
       var ny = linYegua[j];
       if (np.nombre === ny.nombre) {
-        // Calcular generación en cada línea
+        // Calcular generacion en cada linea
         var genP = np.gen === 0 ? 1 : np.gen;
         var genY = ny.gen === 0 ? 1 : ny.gen;
-        // Notación: generacion en padre x generacion en madre de la CRIA
+        // Notacion: generacion en padre x generacion en madre de la CRIA
         // Cria gen 1 = padres, gen 2 = abuelos...
         // El potro es gen 1, sus abuelos gen 2, bisabuelos gen 3
         var notaP = genP === 0 ? 1 : (genP === 2 ? 2 : (genP === 3 ? 3 : 4));
         var notaY = genY === 0 ? 1 : (genY === 2 ? 2 : (genY === 3 ? 3 : 4));
-        // Verificar si ya está registrado
+        // Verificar si ya esta registrado
         var yaEsta = false;
         for (var k = 0; k < comunes.length; k++) {
           if (comunes[k].nombre === np.nombre) { yaEsta = true; break; }
@@ -970,7 +970,7 @@ function calcularInbreeding(potro, yegua, apPotro, amPotro, apYegua, amYegua, ta
 }
 
 function clasificarCruza(comunes) {
-  if (comunes.length === 0) return {tipo:"OUTCROSS", color:"#1b5e20", icono:"⬜"};
+  if (comunes.length === 0) return {tipo:"OUTCROSS", color:"#1b5e20", icono:""};
 
   // Verificar intensidad
   var maxIntensidad = 0;
@@ -987,15 +987,15 @@ function clasificarCruza(comunes) {
 
   // Clasificar
   if (maxIntensidad >= 6) { // 2x2 o 2x3
-    if (tieneCalidad && soloCalidad) return {tipo:"INBREEDING DIRIGIDO", color:"#e65100", icono:"🔶"};
-    return {tipo:"INBREEDING", color:"#c62828", icono:"🔴"};
+    if (tieneCalidad && soloCalidad) return {tipo:"INBREEDING DIRIGIDO", color:"#e65100", icono:""};
+    return {tipo:"INBREEDING", color:"#c62828", icono:""};
   } else if (maxIntensidad >= 4) { // 3x3 o 3x4
-    if (tieneCalidad && soloCalidad) return {tipo:"LINEBREEDING DIRIGIDO", color:"#2d8f63", icono:"🟢"};
-    if (tieneCalidad) return {tipo:"LINEBREEDING", color:"#f0a500", icono:"🟡"};
-    return {tipo:"INBREEDING MODERADO", color:"#e65100", icono:"🟠"};
+    if (tieneCalidad && soloCalidad) return {tipo:"LINEBREEDING DIRIGIDO", color:"#2d8f63", icono:""};
+    if (tieneCalidad) return {tipo:"LINEBREEDING", color:"#f0a500", icono:""};
+    return {tipo:"INBREEDING MODERADO", color:"#e65100", icono:""};
   } else { // 4x4 o mas lejano
-    if (tieneCalidad) return {tipo:"OUTCROSS DIRIGIDO", color:"#1565c0", icono:"🔵"};
-    return {tipo:"OUTCROSS", color:"#1b5e20", icono:"⬜"};
+    if (tieneCalidad) return {tipo:"OUTCROSS DIRIGIDO", color:"#1565c0", icono:""};
+    return {tipo:"OUTCROSS", color:"#1b5e20", icono:""};
   }
 }
 
@@ -1012,15 +1012,12 @@ function simular() {
   var apComb = pPadre+"/"+pMadre+"/"+pAP[0]+"/"+pAP[1]+"/"+pAM[0]+"/"+pAM[1];
   var amComb = mPadre+"/"+mMadre+"/"+mAP[0]+"/"+mAP[1]+"/"+mAM[0]+"/"+mAM[1];
 
-  // Tatarabuelos
   var tatPotro = TATARABUELOS[pN] || null;
   var tatYegua = TATARABUELOS[mN] || null;
 
-  // Calcular inbreeding
   var comunes = calcularInbreeding(pN, mN, pv[3]||"", pv[4]||"", mv[3]||"", mv[4]||"", tatPotro, tatYegua);
   var clasif = clasificarCruza(comunes);
 
-  // Consanguinidad simple para el panel rojo
   var pAll = [pN,pPadre,pMadre].concat(pAP).concat(pAM).map(function(s){return s.toLowerCase().trim();});
   var mAll = [mN,mPadre,mMadre].concat(mAP).concat(mAM).map(function(s){return s.toLowerCase().trim();});
   var consang = pAll.filter(function(a){return a && a.length > 2 && mAll.indexOf(a) > -1;});
@@ -1029,60 +1026,57 @@ function simular() {
   res.style.display = "block";
   document.getElementById("sim-titulo").textContent = pN + " x " + mN;
 
-  // Árbol genealógico
-  var arbolHtml = arbolHTML("Cria proyectada", pN, mN, apComb, amComb, pN+" x "+mN, tatPotro ? tatPotro.ap : "", tatYegua ? tatYegua.am : "");
+  var arbolHtml = arbolHTML("Cria proyectada", pN, mN, apComb, amComb, pN+" x "+mN,
+    tatPotro ? tatPotro.ap : "", tatYegua ? tatYegua.am : "");
 
-  // Panel de clasificación genética
-  var genHtml = '<div style="background:' + clasif.color + '15;border:2px solid ' + clasif.color + ';border-radius:10px;padding:12px;margin-top:10px">';
-  genHtml += '<div style="font-size:14px;font-weight:600;color:' + clasif.color + ';margin-bottom:8px">' + clasif.icono + ' ' + clasif.tipo + '</div>';
+  var genHtml = buildGenHtml(clasif, comunes);
+
+  document.getElementById("sim-arbol").innerHTML = arbolHtml + genHtml + getMontorySimulador(pN, mN);
+
+  var cw = document.getElementById("sim-consang");
+  cw.style.display = "none";
+
+  res.scrollIntoView({behavior:"smooth",block:"nearest"});
+}
+
+function buildGenHtml(clasif, comunes) {
+  var bg = clasif.color + "20";
+  var h = '<div style="background:' + bg + ';border:2px solid ' + clasif.color + ';border-radius:10px;padding:14px;margin-top:12px">';
+  h += '<div style="font-size:15px;font-weight:700;color:' + clasif.color + ';margin-bottom:10px">';
+  h += clasif.icono + ' ' + clasif.tipo + '</div>';
 
   if (comunes.length === 0) {
-    genHtml += '<div style="font-size:12px;color:#333;margin-bottom:4px">Sin ancestros comunes en las primeras 4 generaciones.</div>';
-    genHtml += '<div style="font-size:12px;color:#333">Maxima diversidad genetica — cria con alto vigor hibrido esperado.</div>';
+    h += '<p style="font-size:12px;color:#333;margin:4px 0">Sin ancestros comunes en las primeras 4 generaciones.</p>';
+    h += '<p style="font-size:12px;color:#333;margin:4px 0">Maxima diversidad genetica — cria con alto vigor hibrido esperado.</p>';
   } else {
-    genHtml += '<div style="font-size:12px;font-weight:500;color:#333;margin-bottom:6px">Ancestros comunes:</div>';
+    h += '<p style="font-size:12px;font-weight:600;color:#333;margin:0 0 6px">Ancestros comunes detectados:</p>';
     for (var i = 0; i < comunes.length; i++) {
       var c = comunes[i];
       var nota = c.notaP + "x" + c.notaY;
-      var tipo_nota = (c.notaP + c.notaY <= 4) ? "Abuelos" : (c.notaP + c.notaY <= 6) ? "Bisabuelos" : "Tatarabuelos";
-      var etiq = c.esCalidad ? " ★ Reproductor de calidad Montory" : "";
-      genHtml += '<div style="font-size:12px;color:#333;margin-bottom:3px;padding:4px 8px;background:rgba(255,255,255,0.6);border-radius:6px">';
-      genHtml += '<b>' + c.nombre + '</b> — Notacion <b>' + nota + '</b> (' + tipo_nota + ' por ambos lados)' + etiq;
-      genHtml += '</div>';
+      var gen_desc = (c.notaP + c.notaY <= 4) ? "abuelos de la cria por ambos lados" :
+                     (c.notaP + c.notaY <= 6) ? "bisabuelos de la cria por ambos lados" : "tatarabuelos de la cria por ambos lados";
+      var star = c.esCalidad ? " — STAR Reproductor Montory" : "";
+      h += '<div style="font-size:12px;padding:5px 10px;margin-bottom:4px;background:rgba(255,255,255,0.7);border-radius:6px;color:#222">';
+      h += '<b>' + c.nombre + '</b> — Notacion <b>' + nota + '</b> (' + gen_desc + ')' + star;
+      h += '</div>';
     }
-
-    // Explicación del tipo
-    genHtml += '<div style="font-size:11px;color:#555;margin-top:8px;padding-top:6px;border-top:1px solid rgba(0,0,0,0.1)">';
-    if (clasif.tipo === "LINEBREEDING DIRIGIDO") {
-      genHtml += 'Linebreeding dirigido sobre reproductor(es) de calidad probada segun Montory. Concentra virtudes del ancestro repetido. Riesgo moderado — recomendable cuando el ancestro es de alta calidad.';
-    } else if (clasif.tipo === "LINEBREEDING") {
-      genHtml += 'Linebreeding moderado. Hay repeticion en generaciones medias. Evaluar si el ancestro repetido transmite virtudes o defectos antes de proceder.';
-    } else if (clasif.tipo === "INBREEDING DIRIGIDO") {
-      genHtml += 'Inbreeding intenso sobre reproductor de calidad. Puede fijar caracteristicas del ancestro pero aumenta riesgo de expresar defectos recesivos. Solo recomendable con ancestros de calidad muy probada.';
-    } else if (clasif.tipo === "INBREEDING") {
-      genHtml += 'Inbreeding intenso sobre ancestro sin calidad probada destacada. Alto riesgo de expresar defectos recesivos y reducir vigor. No recomendado.';
-    } else if (clasif.tipo === "OUTCROSS DIRIGIDO") {
-      genHtml += 'Sin consanguinidad cercana pero con ancestros de calidad comunes en generaciones lejanas. Combina vigor hibrido con base genetica de calidad. Muy recomendable.';
-    } else if (clasif.tipo === "INBREEDING MODERADO") {
-      genHtml += 'Inbreeding moderado en ancestros sin calidad Montory destacada. Evaluar con cuidado los ancestros repetidos antes de proceder.';
-    }
-    genHtml += '</div>';
+    h += '<div style="font-size:11px;color:#555;margin-top:10px;padding-top:8px;border-top:1px solid rgba(0,0,0,0.12)">';
+    h += getExplicacion(clasif.tipo);
+    h += '</div>';
   }
-  genHtml += '</div>';
+  h += '</div>';
+  return h;
+}
 
-  document.getElementById("sim-arbol").innerHTML = arbolHtml + genHtml;
-
-  // Panel rojo de advertencia si hay consang
-  var cw = document.getElementById("sim-consang");
-  if (consang.length > 0) {
-    cw.style.display = "block";
-    cw.textContent = "Ancestros comunes detectados: " + consang.map(function(s){return s.charAt(0).toUpperCase()+s.slice(1);}).join(", ");
-  } else {
-    cw.style.display = "none";
-  }
-
-  document.getElementById("sim-arbol").innerHTML += getMontorySimulador(pN, mN);
-  res.scrollIntoView({behavior:"smooth",block:"nearest"});
+function getExplicacion(tipo) {
+  if (tipo === "OUTCROSS") return "Sin consanguinidad en 4 generaciones. Maxima diversidad y vigor hibrido. Resultado impredecible pero generalmente vigoroso.";
+  if (tipo === "OUTCROSS DIRIGIDO") return "Sin consanguinidad cercana pero con ancestros de calidad Montory en generaciones lejanas. Combina vigor hibrido con base genetica de calidad. Muy recomendable.";
+  if (tipo === "LINEBREEDING DIRIGIDO") return "Linebreeding sobre reproductor(es) de calidad probada segun Montory. Concentra virtudes del ancestro de calidad. Riesgo moderado — recomendable cuando el ancestro es de maxima calidad comprobada.";
+  if (tipo === "LINEBREEDING") return "Linebreeding moderado sobre ancestro de calidad mixta. Evaluar si el ancestro repetido transmite principalmente virtudes o defectos antes de proceder.";
+  if (tipo === "INBREEDING DIRIGIDO") return "Inbreeding intenso sobre reproductor de calidad Montory. Puede fijar caracteres del ancestro pero aumenta riesgo de defectos recesivos. Solo recomendable con ancestros de calidad muy probada.";
+  if (tipo === "INBREEDING MODERADO") return "Inbreeding moderado en ancestros sin calidad Montory destacada. Evaluar con cuidado antes de proceder.";
+  if (tipo === "INBREEDING") return "Inbreeding intenso sobre ancestro sin calidad probada. Alto riesgo de defectos recesivos y menor vigor. No recomendado.";
+  return "";
 }
 
 // ===== SALUD =====
@@ -1391,6 +1385,73 @@ var MONTORY = {
   }
 };
 
+
+// ===== INBREEDING INDIVIDUAL POR CABALLO =====
+var INBREEDING_INDIVIDUAL = {
+  "Tincada":          {tipo:"OUTCROSS", comunes:[]},
+  "Trasnochada":      {tipo:"OUTCROSS", comunes:[]},
+  "Cuentista":        {tipo:"OUTCROSS", comunes:[]},
+  "Pillastrina":      {tipo:"LINEBREEDING DIRIGIDO", comunes:[{nombre:"Esperando",nota:"3x3",calidad:true}]},
+  "Represa":          {tipo:"OUTCROSS", comunes:[]},
+  "Rustica":          {tipo:"OUTCROSS", comunes:[]},
+  "Protesta":         {tipo:"OUTCROSS", comunes:[]},
+  "Chinchilla T.E.":  {tipo:"OUTCROSS", comunes:[]},
+  "Delito":           {tipo:"LINEBREEDING DIRIGIDO", comunes:[{nombre:"Estribillo",nota:"3x3",calidad:true}]},
+  "Avispado":         {tipo:"OUTCROSS", comunes:[]},
+  "Veneno":           {tipo:"OUTCROSS", comunes:[]},
+  "Don Gustavo":      {tipo:"OUTCROSS", comunes:[]},
+  "Filamento":        {tipo:"LINEBREEDING DIRIGIDO", comunes:[{nombre:"Esperando",nota:"3x3",calidad:true},{nombre:"Guinda",nota:"3x3",calidad:true}]},
+  "Aletazo II":       {tipo:"OUTCROSS", comunes:[]},
+  "Inquieto":         {tipo:"OUTCROSS", comunes:[]},
+  "Cuento Loco":      {tipo:"LINEBREEDING DIRIGIDO", comunes:[{nombre:"Malulo",nota:"3x3",calidad:true}]},
+  "Cuento Falso":     {tipo:"OUTCROSS", comunes:[]},
+  "Pironela":         {tipo:"OUTCROSS", comunes:[]},
+  "Potranca Cacique": {tipo:"OUTCROSS", comunes:[]}
+};
+
+function getInbreedingIndividualHTML(nombre) {
+  var d = INBREEDING_INDIVIDUAL[nombre];
+  if (!d) return "";
+
+  var color, icono, explicacion;
+  if (d.tipo === "OUTCROSS") {
+    color = "#1b5e20"; icono = "⬜";
+    explicacion = "Sin ancestros repetidos en las primeras 3 generaciones. Maxima diversidad genetica.";
+  } else if (d.tipo === "LINEBREEDING DIRIGIDO") {
+    color = "#1565c0"; icono = "🟢";
+    explicacion = "Linebreeding dirigido sobre reproductor(es) de calidad Montory. Concentra virtudes del ancestro de calidad comprobada.";
+  } else if (d.tipo === "LINEBREEDING") {
+    color = "#f0a500"; icono = "🟡";
+    explicacion = "Linebreeding moderado. El ancestro repetido aparece en ambas lineas.";
+  } else if (d.tipo === "INBREEDING DIRIGIDO") {
+    color = "#e65100"; icono = "🔶";
+    explicacion = "Inbreeding intenso sobre reproductor de calidad. Fija caracteristicas pero aumenta riesgo de defectos recesivos.";
+  } else if (d.tipo === "INBREEDING") {
+    color = "#c62828"; icono = "🔴";
+    explicacion = "Inbreeding intenso. Alto riesgo de defectos recesivos.";
+  } else {
+    color = "#333"; icono = "⬜";
+    explicacion = "";
+  }
+
+  var h = '<div style="background:' + color + '12;border-left:4px solid ' + color + ';border-radius:8px;padding:10px 12px;margin-top:8px">';
+  h += '<div style="font-size:12px;font-weight:700;color:' + color + ';margin-bottom:4px">' + icono + ' ' + d.tipo + '</div>';
+
+  if (d.comunes.length > 0) {
+    for (var i = 0; i < d.comunes.length; i++) {
+      var c = d.comunes[i];
+      var star = c.calidad ? " — STAR Reproductor de calidad Montory" : "";
+      h += '<div style="font-size:11px;color:#333;margin-bottom:3px;padding:3px 8px;background:rgba(255,255,255,0.7);border-radius:5px">';
+      h += '<b>' + c.nombre + '</b> aparece como bisabuelo por ambas lineas (Notacion: <b>' + c.nota + '</b>)' + star;
+      h += '</div>';
+    }
+  }
+
+  h += '<div style="font-size:11px;color:#555;margin-top:6px">' + explicacion + '</div>';
+  h += '</div>';
+  return h;
+}
+
 // ===== FUNCION ANALISIS MONTORY =====
 function getMontoryHTML(nombre, ap, am) {
   var cab = null;
@@ -1414,28 +1475,28 @@ function getMontoryHTML(nombre, ap, am) {
   if (!padre && !madre && enTodos.length === 0) return "";
 
   var html = '<div class="montory-panel">';
-  html += '<div class="montory-title"><span style="font-size:14px">📖</span> Analisis Montory — <b>' + nombre + '</b></div>';
+  html += '<div class="montory-title"><span style="font-size:14px"></span> Analisis Montory - <b>' + nombre + '</b></div>';
   html += '<div class="montory-text">';
 
   // PADRE
   html += '<div class="montory-line" style="margin-bottom:5px"><b>PADRE: ' + (padre||"Desconocido") + '</b>';
   if (MONTORY[padre]) {
-    html += ' — ' + MONTORY[padre].lineas[0];
+    html += ' - ' + MONTORY[padre].lineas[0];
   } else if (enPadre.length > 0) {
-    html += ' — Linea descendiente de <b>' + enPadre[0] + '</b> (' + MONTORY[enPadre[0]].titulo + '). ' + MONTORY[enPadre[0]].lineas[1];
+    html += ' - Linea descendiente de <b>' + enPadre[0] + '</b> (' + MONTORY[enPadre[0]].titulo + '). ' + MONTORY[enPadre[0]].lineas[1];
   } else {
-    html += ' — Reproductor del criadero de origen.';
+    html += ' - Reproductor del criadero de origen.';
   }
   html += '</div>';
 
   // MADRE
   html += '<div class="montory-line" style="margin-bottom:5px"><b>MADRE: ' + (madre||"Desconocida") + '</b>';
   if (MONTORY[madre]) {
-    html += ' — ' + MONTORY[madre].lineas[0];
+    html += ' - ' + MONTORY[madre].lineas[0];
   } else if (enMadre.length > 0) {
-    html += ' — Linea descendiente de <b>' + enMadre[0] + '</b> (' + MONTORY[enMadre[0]].titulo + '). ' + MONTORY[enMadre[0]].lineas[1];
+    html += ' - Linea descendiente de <b>' + enMadre[0] + '</b> (' + MONTORY[enMadre[0]].titulo + '). ' + MONTORY[enMadre[0]].lineas[1];
   } else {
-    html += ' — Yegua reproductora del criadero de origen.';
+    html += ' - Yegua reproductora del criadero de origen.';
   }
   html += '</div>';
 
@@ -1464,7 +1525,7 @@ function getMontoryHTML(nombre, ap, am) {
     var max = Math.min(enTodos.length, 4);
     for (var k = 0; k < max; k++) {
       var rm = MONTORY[enTodos[k]];
-      html += '<div class="montory-line" style="margin-left:8px;margin-bottom:3px">• <b>' + enTodos[k] + '</b> (' + rm.titulo + '): ' + rm.lineas[1] + '</div>';
+      html += '<div class="montory-line" style="margin-left:8px;margin-bottom:3px"> <b>' + enTodos[k] + '</b> (' + rm.titulo + '): ' + rm.lineas[1] + '</div>';
     }
   }
 
@@ -1475,6 +1536,8 @@ function getMontoryHTML(nombre, ap, am) {
     html += '<div class="montory-line" style="color:#5a3e1b;font-style:italic">' + principal.lineas[principal.lineas.length-1] + '</div>';
   }
 
+  // Inbreeding individual
+  html += getInbreedingIndividualHTML(nombre);
   html += '</div></div>';
   return html;
 }
