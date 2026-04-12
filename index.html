@@ -120,6 +120,15 @@ textarea{resize:vertical;min-height:70px;}
 .sim-result{background:var(--verde-muy-claro);border:1px solid rgba(26,107,74,0.3);border-radius:12px;padding:14px;margin-top:12px;display:none;}
 .sim-title{font-family:'Playfair Display',serif;font-size:15px;color:var(--verde-oscuro);margin-bottom:12px;}
 .warn-consang{background:#fff3e0;border:1px solid #ffb74d;border-radius:8px;padding:8px 10px;font-size:11px;color:#e65100;margin-top:8px;}
+.montory-panel{background:linear-gradient(135deg,#f8f4ee,#f0ebe0);border:1px solid #c8a96e;border-radius:12px;padding:14px;margin-top:10px;}
+.montory-title{font-family:'Playfair Display',serif;font-size:13px;color:#5a3e1b;margin-bottom:6px;display:flex;align-items:center;gap:6px;}
+.montory-badge{display:inline-block;font-size:10px;padding:2px 8px;border-radius:20px;font-weight:600;margin-left:4px;}
+.mb-verde{background:#e8f5e9;color:#1b5e20;}
+.mb-amarillo{background:#fff8e1;color:#e65100;}
+.mb-rojo{background:#ffebee;color:#c62828;}
+.montory-text{font-size:12px;color:#4a3728;line-height:1.6;}
+.montory-line{margin-bottom:3px;}
+.montory-sep{border:none;border-top:1px solid #d4b896;margin:8px 0;}
 /* INACTIVIDAD */
 .inactivity-overlay{display:none;position:fixed;inset:0;background:rgba(10,35,25,0.97);z-index:999;align-items:center;justify-content:center;flex-direction:column;color:#fff;text-align:center;padding:2rem;}
 .inactivity-overlay.show{display:flex;}
@@ -673,6 +682,7 @@ function showDetalle(id, panelId) {
   html += '<div style="margin-top:6px">' + badgesHtml(c) + '</div></div></div>';
   html += '<div style="font-size:11px;font-weight:500;color:var(--verde-oscuro);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px">Genealogia</div>';
   html += arbolHTML(c.nombre, c.padre, c.madre, c.ap, c.am, "");
+  html += getMontoryHTML(c.nombre, c.ap, c.am);
   html += '</div>';
   panel.innerHTML = html;
   panel.scrollIntoView({behavior:"smooth",block:"nearest"});
@@ -851,19 +861,19 @@ function eliminarSeg(i) {
 // ===== SIMULADOR =====
 // Tatarabuelos conocidos por potro/yegua
 var TATARABUELOS = {
-  "Delito":      {ap:"Estribillo/Lista/Nipan/Naranjerita/Estribillo/Ociosa/Retoque/Iberia", am:"Estribillo/Ociosa/Retoque/Iberia/—/—/—/—"},
-  "Avispado":    {ap:"Arauco/Sorocha/Escandalo/Que Luna/Plebiscito/Juliana/Rangoso/Directora", am:"Plebiscito/Juliana/Rangoso/Directora/—/—/—/—"},
+  "Delito":      {ap:"Estribillo/Lista/Nipan/Naranjerita/Estribillo/Ociosa/Retoque/Iberia", am:"Estribillo/Ociosa/Retoque/Iberia/-/-/-/-"},
+  "Avispado":    {ap:"Arauco/Sorocha/Escandalo/Que Luna/Plebiscito/Juliana/Rangoso/Directora", am:"Plebiscito/Juliana/Rangoso/Directora/-/-/-/-"},
   "Veneno":      {ap:"Retoque/Que Chica/Puelche/Ociosa/Esperando/Sauzala/Roto Choro/Ricura", am:"Esperando/Sauzala/Roto Choro/Ricura/Roncador/Pistolera/Roncador/Risquera"},
   "Don Gustavo": {ap:"Atento/Costurera/Taconeo/Maiga/Esperando/Guinda/El Tacon/Estupenda", am:"Esperando/Guinda/Malulo/Gabarra/Bellaco/Na Juana/Albertio/Topeadura"},
   "Filamento":   {ap:"Esperando/Guinda/Peine/Barquilla/Taco/Remolienda/Esperando/Guinda", am:"Taco/Remolienda/Esperando/Guinda/Estribillo/Empenosa/Choclo/Hechicera"},
   "Tincada":     {ap:"Amanecido/Pegualera/Vivaracho/Remolienda/Faustino/Batalla/Pial/Felpa", am:"Esperando/Guinda/El Tacon/Estupenda/Taco/Burlona/Entusiasmo/Tachuela"},
   "Trasnochada": {ap:"Estribillo/Sombra/Brillazon/Pistolera/Estribo/Reserva/No me Toques/Fueguina", am:"Intruso/Mentirosa/Vamos Viendo/Ona Tere/Bellaco/Intrusa/Estribillo/Embusterona"},
-  "Cuentista":   {ap:"Bellaco/Na Juana/Esperando/Norta/Taco/Percala/Imperio/Norta", am:"Escandalo/Argucia/Talento/Huachaca/—/—/—/—"},
+  "Cuentista":   {ap:"Bellaco/Na Juana/Esperando/Norta/Taco/Percala/Imperio/Norta", am:"Escandalo/Argucia/Talento/Huachaca/-/-/-/-"},
   "Pillastrina": {ap:"Bellaco/Na Juana/Esperando/Norta/Taco/Percala/Imperio/Norta", am:"Taco/Remolienda/Esperando/Guinda/Estribillo/Empenosa/Choclo/Hechicera"},
   "Represa":     {ap:"Chamanto/Mensajera/Escandalo/Vengadora/Pehual/Querendona/Regalado/Nahuelbuta", am:"Chamullo/Pitica/Estacon/Sonadora/Taco/Remolienda/Puma/Rampla"},
   "Rustica":     {ap:"Taco/Que Luna/Enlitrado II/Melinka/Rigor/Talavera/Borracho en Dgo./Endemonia", am:"Esperando/Guinda/Rotoso/Leyenda/Estribillo/Empenosa/Lienzo/China"},
-  "Protesta":    {ap:"Arauco/Sorocha/Quillacon/Picardia/—/—/—/—", am:"Roto Choro/Maca/Eslabon/Chispa/—/—/—/—"},
-  "Chinchilla":  {ap:"Huasamaco/Santa Barbara/Domino/Escupeta/—/—/—/—", am:"Taco/Percala/Rival/Burlesca/—/—/—/—"}
+  "Protesta":    {ap:"Arauco/Sorocha/Quillacon/Picardia/-/-/-/-", am:"Roto Choro/Maca/Eslabon/Chispa/-/-/-/-"},
+  "Chinchilla":  {ap:"Huasamaco/Santa Barbara/Domino/Escupeta/-/-/-/-", am:"Taco/Percala/Rival/Burlesca/-/-/-/-"}
 };
 
 function simular() {
@@ -901,6 +911,7 @@ function simular() {
   } else {
     cw.style.display = "none";
   }
+  document.getElementById("sim-arbol").innerHTML += getMontorySimulador(pN, mN);
   res.scrollIntoView({behavior:"smooth",block:"nearest"});
 }
 
@@ -995,6 +1006,827 @@ function actualizarTablasSalud() {
 
 // Cargar registros al iniciar
 actualizarTablasSalud();
+
+// ===== BASE DE DATOS MONTORY =====
+var MONTORY = {
+  "Estribillo": {
+    familia: "Familia Guante",
+    importancia: "verde",
+    titulo: "JEFE DE RAZA",
+    lineas: [
+      "Familia Guante  Descendiente de Cambucho-Peso Fuerte  Jefe de Raza indiscutido.",
+      "Segun Montory: de inmensa trascendencia en la raza actual, su influencia se manifiesta en practicamente todos los caballos chilenos modernos.",
+      "Gran transmisor de sello racial, morfologia y calidad vaquera en todas sus lineas.",
+      "Sus hijos destacados incluyen Estallido, Escabullido, Rosauro y decenas de campeones nacionales.",
+      "Presente en 8 ejemplares del criadero Aguas de Zapallar - base genetica solida.",
+      "Su presencia multiple es normal en caballos modernos pero debe controlarse para evitar consanguinidad.",
+      "Recomendacion: cruzas donde solo uno de los padres lo tenga en primer o segundo nivel."
+    ]
+  },
+  "Malulo": {
+    familia: "Familia Guante",
+    importancia: "verde",
+    titulo: "Gran reproductor",
+    lineas: [
+      "Familia Guante  Hijo de Bellaco y Na Juana  Criadero Maquena de Italo Zunino.",
+      "Segun Montory: caballo imponente de estampa y excepcional vaquero, el padrillo mas completo a la fecha.",
+      "Dio grandes espectaculos en las medialunas del pais, tenia muchos seguidores en todo Chile.",
+      "Gran transmisor de morfologia y calidad vaquera - sus hijos heredan tipo chileno definido.",
+      "Muy presente en el criadero Aguas de Zapallar - 7 ejemplares lo tienen en su genealogia.",
+      "Su padre Bellaco es tambien de gran importancia en la raza, linea Guante-Cuevana activa.",
+      "Recomendacion: cruzas con yeguas de lineas sin Malulo ni Bellaco para evitar consanguinidad."
+    ]
+  },
+  "Talento": {
+    familia: "Familia Guante",
+    importancia: "verde",
+    titulo: "Campeon de Chile",
+    lineas: [
+      "Familia Guante  Hijo de Taco y Que Luna  Criadero Santa Isabel de Agustin Edwards.",
+      "Segun Montory: vaquero excepcional, sin duda uno de los mejores de todas las epocas.",
+      "Campeon de Chile multiple veces entre 1999 y 2009. Padre de Almendra (Campeona 2002) y Fiestera (Campeona 2008).",
+      "No era llamativo pero era un potrillo inteligente y con personalidad - su calidad aparecia en la cancha.",
+      "Padre de Juncal T.E. del criadero, transmitiendo su excepcional calidad vaquera.",
+      "Linea Taco-Que Luna: combinacion de las mejores lineas vaqueras de la raza.",
+      "Recomendacion: linea altamente recomendada para obra y corrales. Transmite calidad consistentemente."
+    ]
+  },
+  "Que Luna": {
+    familia: "Familia Guante",
+    importancia: "verde",
+    titulo: "Madre excepcional",
+    lineas: [
+      "Familia Guante  Hija de Borracho en Domingo-Endemonia por Rigor y Berlina  Criadero Piguchen.",
+      "Segun Montory: pocas yeguas pueden exhibir tal cantidad de Campeones de Exposicion y Rodeo.",
+      "1 ranking yeguas 1987-1988. Gran vaquera y madre de excepcion de la raza.",
+      "Sus hijos en criadero Piguchen incluyen multiples campeones nacionales y finalistas.",
+      "Presente en Rustica y Juncal T.E. del criadero - linea materna de maxima calidad.",
+      "Como madre: dio a Taconeo, Maiga, Quinchero y otros grandes reproductores.",
+      "Recomendacion: su presencia en la genealogia materna siempre es un signo muy positivo."
+    ]
+  },
+  "Requinto": {
+    familia: "Familia Guante",
+    importancia: "verde",
+    titulo: "Gran reproductor deportivo",
+    lineas: [
+      "Familia Guante  Descendiente directo de Guante I a traves de Vicuna I  Linea de maxima pureza.",
+      "Segun Montory: gran reproductor moderno de la familia Guante, linea de gran calidad deportiva.",
+      "Padre de Ronaldo (padre de Protesta) y Firpo (padre de Avispado) en el criadero.",
+      "Sus descendientes se destacan tanto en obra como en morfologia y exposiciones.",
+      "Linea Arauco-Sorocha-Requinto: una de las mas elegantes y deportivas de la raza.",
+      "Presente en Protesta, Avispado y Pironela del criadero - tres ejemplares muy distintos.",
+      "Recomendacion: linea muy recomendada para potros deportivos y de gran tipo racial."
+    ]
+  },
+  "Escorpion": {
+    familia: "Familia Guante",
+    importancia: "verde",
+    titulo: "Linea Estribillo",
+    lineas: [
+      "Familia Guante  Hijo de Estribillo y Lista  Reproductor de gran vigencia.",
+      "Segun Montory: padre de Fantastico (padre de Delito) y de multiples campeones nacionales.",
+      "La Golondrina hija de Escorpion fue Gran Campeona Hembra Osorno 2013.",
+      "Embustero hijo de Escorpion fue Gran Campeon Macho FISA Talca 2013, medidas 1.41m alzada.",
+      "Bailaora hija de Escorpion fue Gran Campeona Hembra y Mejor Ejemplar de la Raza Nunoa 2010.",
+      "Delito del criadero hereda esta sangre directamente - excelente base genetica.",
+      "Recomendacion: linea de gran calidad. Cruzas con yeguas sin Estribillo en primer nivel."
+    ]
+  },
+  "El Taita": {
+    familia: "Familia Guante",
+    importancia: "verde",
+    titulo: "Reproductor activo",
+    lineas: [
+      "Familia Guante  Hijo de Rotoso  Reproductor activo en criadero El Bramido.",
+      "Segun Montory: padre de Llorona (Gran Campeona de la Raza Valdivia 2013, 1.38m alzada).",
+      "Tambien padre de Gueltero (Campeon Potrillo SAGO 2010) e Imposible (muy buen vaquero).",
+      "Chinchilla T.E. del criadero es su hija directa, heredando su alzada y morfologia.",
+      "La Potranca Cacique y Pironela tambien tienen a El Taita en su genealogia.",
+      "Linea Rotoso-El Taita: buena morfologia y tipo chileno definido.",
+      "Recomendacion: linea de buena morfologia. Complementa bien con lineas de mayor calidad vaquera."
+    ]
+  },
+  "Rotoso": {
+    familia: "Familia Guante",
+    importancia: "verde",
+    titulo: "Linea Alcatraz",
+    lineas: [
+      "Familia Guante  Linea Cuevana de Alcatraz  Padre de El Taita y El Pluma Blanca.",
+      "Segun Montory: reproductor de gran sello racial, linea de gran vigencia en la raza.",
+      "El Pluma Blanca hijo de Rotoso fue finalista nacional multiple veces entre 2000 y 2007.",
+      "El Jeronimo hijo de Rotoso fue muy buen vaquero, corrio del 1997 al 2010.",
+      "Presente en Chinchilla T.E., Rustica y Potranca Cacique del criadero.",
+      "Linea solida de morfologia y tipo chileno, complementa bien con lineas vaqueras.",
+      "Recomendacion: linea positiva para morfologia. Combinar con lineas de calidad deportiva."
+    ]
+  },
+  "Bellaco": {
+    familia: "Familia Guante",
+    importancia: "verde",
+    titulo: "Linea Cuevana",
+    lineas: [
+      "Familia Guante  Linea Cuevana-Principal  Padre de Malulo y abuelo en multiples lineas.",
+      "Segun Montory: gran reproductor de la familia Guante-Cuevana de gran vigencia en la raza.",
+      "Sus descendientes incluyen a Malulo, uno de los mejores reproductores de su epoca.",
+      "Presente en 7 ejemplares del criadero - base genetica comun y solida.",
+      "Como abuelo en Cuentista, Pillastrina, Chinchilla T.E., Icono y Aletazo II del criadero.",
+      "Su presencia multiple es comun y positiva, pero puede generar consanguinidad en cruzas internas.",
+      "Recomendacion: base solida. Vigilar cruzas donde ambos padres lo tengan en primer nivel."
+    ]
+  },
+  "Esperando": {
+    familia: "Familia Guante",
+    importancia: "verde",
+    titulo: "Base genetica fundamental",
+    lineas: [
+      "Familia Guante  Linea Cuevana-Tordillo Trotador  Padre o abuelo de Estribillo.",
+      "Segun Montory: de inmensa trascendencia, aparece en practicamente todas las genealogias modernas.",
+      "Su hija Guinda es tambien de gran importancia como madre en multiples lineas.",
+      "Presente en 9 ejemplares del criadero - la presencia mas extendida de cualquier reproductor.",
+      "Su aparicion multiple como bisabuelo o tatarabuelo es completamente normal en caballos modernos.",
+      "No representa consanguinidad problematica cuando aparece solo en generaciones lejanas.",
+      "Recomendacion: presencia normal y esperada. Solo vigilar si aparece en mas de dos lugares en primer nivel."
+    ]
+  },
+  "Bajativo": {
+    familia: "Familia Guante",
+    importancia: "verde",
+    titulo: "Linea Capuchino",
+    lineas: [
+      "Familia Guante  Hijo de Capuchino-Desganada  Reproductor criadero Las Callanas.",
+      "Segun Montory: linea de la familia Guante con calidad vaquera y de corrales.",
+      "Padre de Veneno y Aletazo II del criadero - dos ejemplares distintos en calidad.",
+      "Su padre Capuchino es reproductor de la linea Guante con presencia en el sur de Chile.",
+      "Linea activa en criadero Las Callanas, uno de los criaderos mas importantes de Chile.",
+      "Veneno y Aletazo II comparten este padre - no recomendable cruzar sus descendientes.",
+      "Recomendacion: linea solida. Evitar cruzas entre descendientes de Veneno y Aletazo II."
+    ]
+  },
+  "Capuchino": {
+    familia: "Familia Guante",
+    importancia: "verde",
+    titulo: "Linea sur de Chile",
+    lineas: [
+      "Familia Guante  Hijo de Retoque-Que Chica  Reproductor activo en criaderos del sur.",
+      "Segun Montory: linea de la familia Guante con calidad vaquera establecida.",
+      "Abuelo paterno de Veneno e Inquieto del criadero - linea compartida.",
+      "Sus descendientes se han reproducido principalmente en criaderos de la zona sur.",
+      "Abuelo de Aletazo II por linea paterna - presente en tres caballos del criadero.",
+      "La presencia de Capuchino en Veneno, Inquieto y Aletazo II los hace parientes cercanos.",
+      "Recomendacion: no cruzar descendientes de Veneno con descendientes de Aletazo II."
+    ]
+  },
+  "Chiloco": {
+    familia: "Familia Guante",
+    importancia: "verde",
+    titulo: "3er Campeon Chile 2025",
+    lineas: [
+      "Familia Guante  Hijo de Estruendo-Pirateada  Criadero Agua de los Campos.",
+      "Segun Montory: 3er Campeon de Chile 2025, uno de los mejores potros de la actualidad.",
+      "Padre de Cuento Loco en Pillastrina - primer hijo del criadero con sangre campeona.",
+      "Linea con multiples generaciones de sangre Guante por via Estruendo-Esperando-Guinda.",
+      "Cuento Loco hereda una de las mejores combinaciones geneticas disponibles en Chile hoy.",
+      "Linea activa y de gran calidad deportiva actual - sangre fresca y de alto nivel.",
+      "Recomendacion: seguir Cuento Loco de cerca - tiene potencial deportivo significativo."
+    ]
+  },
+  "Estruendo": {
+    familia: "Familia Guante",
+    importancia: "verde",
+    titulo: "Linea Guante activa",
+    lineas: [
+      "Familia Guante  Linea Cuevana-Tordillo Trotador  Padre de Chiloco.",
+      "Segun Montory: reproductor activo de la familia Guante con calidad deportiva.",
+      "Padre de Chiloco (3er Campeon Chile 2025) - su linea produce caballos de alto nivel.",
+      "Presente en Tincada, Cuentista, Cuento Loco y Cuento Falso del criadero.",
+      "Su combinacion con lineas de Malulo y Esperando produce caballos de buen tipo.",
+      "Linea activa y vigente - sus descendientes siguen compitiendo con exito.",
+      "Recomendacion: linea positiva para calidad deportiva y tipo racial."
+    ]
+  },
+  "Taco": {
+    familia: "Familia Guante",
+    importancia: "verde",
+    titulo: "Linea Catemina",
+    lineas: [
+      "Familia Guante  Linea Catemina-Principal  Padre de Talento y base de multiples lineas.",
+      "Segun Montory: reproductor de la familia Guante-Catemina de gran vigencia en la raza.",
+      "Tanio hijo de Taco fue Gran Campeon Potro FISA 1980 y 1981 - gran transmisor.",
+      "Cachazo hijo de Taco fue muy bueno de corrales, dejo 177 crias en multiples criaderos.",
+      "Presente en Pillastrina, Filamento, Rustica, Chinchilla T.E., Icono y Juncal T.E.",
+      "Linea clave de la raza - base de Talento y Que Luna, los mejores reproductores modernos.",
+      "Recomendacion: linea muy positiva. Su presencia garantiza calidad vaquera y buen tipo."
+    ]
+  }
+};
+
+// ===== FUNCION ANALISIS MONTORY =====
+function getMontoryHTML(nombre, ap, am) {
+  var todos = [];
+  if (ap) todos = todos.concat(ap.split("/").map(function(s){return s.trim();}));
+  if (am) todos = todos.concat(am.split("/").map(function(s){return s.trim();}));
+  todos.push(nombre);
+
+  var encontrados = [];
+  for (var rep in MONTORY) {
+    if (todos.indexOf(rep) > -1) {
+      encontrados.push(rep);
+      if (encontrados.length >= 3) break;
+    }
+  }
+  if (encontrados.length === 0) return "";
+
+  var m = MONTORY[encontrados[0]];
+  var badgeClass = m.importancia === "verde" ? "mb-verde" : m.importancia === "amarillo" ? "mb-amarillo" : "mb-rojo";
+  var icono = m.importancia === "verde" ? "" : m.importancia === "amarillo" ? "" : "";
+
+  var html = '<div class="montory-panel">';
+  html += '<div class="montory-title">';
+  html += '<span style="font-size:14px"></span>';
+  html += ' Analisis Montory  <b>' + encontrados[0] + '</b>';
+  html += '<span class="montory-badge ' + badgeClass + '">' + icono + ' ' + m.titulo + '</span>';
+  html += '</div>';
+  html += '<div class="montory-text">';
+  for (var i = 0; i < m.lineas.length; i++) {
+    html += '<div class="montory-line">' + (i === 0 ? '<b>' : '') + m.lineas[i] + (i === 0 ? '</b>' : '') + '</div>';
+  }
+  html += '</div>';
+
+  if (encontrados.length > 1) {
+    html += '<hr class="montory-sep">';
+    html += '<div class="montory-text" style="font-size:11px;color:#7a5c3a">';
+    html += '<b>Otros reproductores Montory en esta genealogia:</b> ';
+    html += encontrados.slice(1).map(function(r) {
+      return r + ' (' + MONTORY[r].titulo + ')';
+    }).join("  ");
+    html += '</div>';
+  }
+  html += '</div>';
+  return html;
+}
+
+// ===== ANALISIS MONTORY PARA SIMULADOR =====
+var CRUCES_MONTORY = {
+  "Delito|Tincada": {cal:"MUY_BUENO", lineas:[
+    " Muy recomendado segun Montory",
+    "Escorpion-Estribillo (Delito) x Regalon-Estruendo (Tincada) - sin ancestros comunes detectados.",
+    "Delito trae excelente linea deportiva via Escorpion hijo de Estribillo, uno de los jefes de raza.",
+    "Tincada tiene linea Estruendo-Esperando distinta a la de Delito - buena complementariedad.",
+    "Minima consanguinidad - esta cruza aprovecha bien el vigor hibrido entre lineas distintas.",
+    "Potencial para una cria de gran tipo racial con calidad deportiva y vaquera equilibrada.",
+    "Recomendacion de Montory: una de las mejores opciones del criadero para Delito."
+  ]},
+  "Delito|Trasnochada": {cal:"BUENO", lineas:[
+    " Bueno segun Montory",
+    "Escorpion-Estribillo (Delito) x Festival-Estribillo (Trasnochada) - Estribillo compartido.",
+    "Ambos tienen Estribillo en su genealogia - Delito por Escorpion, Trasnochada como bisabuelo.",
+    "Consanguinidad leve en Estribillo - normal en caballos modernos, no es problematica.",
+    "La linea Festival de Trasnochada aporta sangre diferente que complementa a Delito.",
+    "Resultado esperado: ejemplar de buen tipo racial con calidad deportiva de ambas lineas.",
+    "Recomendacion de Montory: cruza aceptable. La presencia leve de Estribillo no es preocupante."
+  ]},
+  "Delito|Cuentista": {cal:"BUENO", lineas:[
+    " Bueno segun Montory - evaluar",
+    "Escorpion-Estribillo (Delito) x Malulo-Bellaco (Cuentista) - Escandalo compartido levemente.",
+    "Cuentista tiene Malulo y Bellaco como base - linea Guante diferente a la de Delito.",
+    "Consanguinidad leve. El mayor riesgo es acumulacion de linea Guante-Cuevana.",
+    "Montory advierte que Malulo ya transmite tendencia a morfologia particular - vigilar aplomos.",
+    "La linea Escorpion de Delito es positiva y puede compensar posibles debilidades de Cuentista.",
+    "Recomendacion de Montory: aceptable pero preferir Delito con Tincada, Pillastrina o Rustica."
+  ]},
+  "Delito|Pillastrina": {cal:"MUY_BUENO", lineas:[
+    " Muy recomendado segun Montory",
+    "Escorpion-Estribillo (Delito) x Cuenta Cuentos-Malulo (Pillastrina) - sin comunes criticos.",
+    "Delito trae linea Escorpion-Estribillo de calidad deportiva excepcional.",
+    "Pillastrina tiene base Malulo-Cuenta Cuentos - linea Guante vaquera diferente a Delito.",
+    "No se detectan ancestros comunes problematicos - buena diversidad genetica.",
+    "Esta cruza combina lo mejor de la linea deportiva con la linea vaquera del criadero.",
+    "Recomendacion de Montory: muy buena opcion - lineas complementarias con potencial alto."
+  ]},
+  "Delito|Represa": {cal:"BUENO", lineas:[
+    " Bueno segun Montory",
+    "Escorpion-Estribillo (Delito) x Afecto-Plebiscito (Represa) - Escandalo compartido levemente.",
+    "Delito trae excelente linea deportiva via Escorpion hijo de Estribillo.",
+    "Represa tiene lineas diversas con Plebiscito y Chamanto - buena complementariedad general.",
+    "Consanguinidad baja - solo comparten Escandalo en generaciones lejanas.",
+    "La diversidad genetica de esta cruza favorece vigor hibrido en la cria.",
+    "Recomendacion de Montory: buena cruza. Represa aporta diversidad que Delito necesita."
+  ]},
+  "Delito|Rustica": {cal:"MUY_BUENO", lineas:[
+    " Muy recomendado segun Montory",
+    "Escorpion-Estribillo (Delito) x Talento-Malambo (Rustica) - sin ancestros comunes criticos.",
+    "Delito trae la linea Estribillo-Escorpion de gran calidad deportiva y morfologica.",
+    "Rustica trae la linea Talento-Que Luna, las mejores lineas vaqueras de la raza segun Montory.",
+    "Sin consanguinidad problematica - lineas complementarias que se potencian mutuamente.",
+    "Esta combinacion podria producir un ejemplar de gran tipo racial y calidad vaquera.",
+    "Recomendacion de Montory: una de las mejores cruzas posibles del criadero."
+  ]},
+  "Delito|Protesta": {cal:"MUY_BUENO", lineas:[
+    " Muy recomendado segun Montory",
+    "Escorpion-Estribillo (Delito) x Requinto-Ronaldo (Protesta) - sin comunes detectados.",
+    "Delito trae linea Escorpion hijo de Estribillo - calidad deportiva y morfologica.",
+    "Protesta trae linea Requinto-Ronaldo, descendiente directo de Guante I por via distinta.",
+    "Sin consanguinidad problematica - dos ramas distintas de la familia Guante.",
+    "La combinacion de estas dos lineas Guante distintas puede producir gran vigor hibrido.",
+    "Recomendacion de Montory: excelente cruza - dos lineas Guante de calidad que no se superponen."
+  ]},
+  "Delito|Chinchilla": {cal:"MUY_BUENO", lineas:[
+    " Muy recomendado segun Montory",
+    "Escorpion-Estribillo (Delito) x El Taita-Rotoso (Chinchilla T.E.) - sin comunes detectados.",
+    "Delito trae linea Escorpion hijo de Estribillo - calidad deportiva excepcional.",
+    "Chinchilla T.E. trae linea El Taita-Rotoso de buena morfologia y tipo chileno.",
+    "Sin consanguinidad problematica - lineas muy diferentes que se complementan bien.",
+    "El Taita padre de Chinchilla produjo a Llorona Gran Campeona de la Raza 2013.",
+    "Recomendacion de Montory: muy buena cruza - deportivo Escorpion  morfologico El Taita."
+  ]},
+  "Avispado|Tincada": {cal:"MUY_BUENO", lineas:[
+    " Muy recomendado segun Montory",
+    "Requinto-Firpo (Avispado) x Regalon-Estruendo (Tincada) - sin ancestros comunes.",
+    "Avispado trae la linea Requinto, descendiente directo de Guante I, de gran calidad deportiva.",
+    "Tincada tiene linea Estruendo-Regalon completamente distinta a la de Avispado.",
+    "Minima consanguinidad - excelente diversidad genetica para la cria.",
+    "La combinacion Requinto  Estruendo produciria un ejemplar de gran tipo y calidad vaquera.",
+    "Recomendacion de Montory: muy buena opcion para Avispado dentro del criadero."
+  ]},
+  "Avispado|Trasnochada": {cal:"MUY_BUENO", lineas:[
+    " Muy recomendado segun Montory",
+    "Requinto-Firpo (Avispado) x Festival-Escritor (Trasnochada) - sin comunes detectados.",
+    "Avispado trae sangre Requinto de maxima pureza Guante y calidad deportiva.",
+    "Trasnochada tiene linea Festival distinta - poca superposicion con Avispado.",
+    "Sin consanguinidad - esta cruza aprovecha al maximo el vigor hibrido.",
+    "Potencial para producir un ejemplar de gran tipo racial y buena calidad vaquera.",
+    "Recomendacion de Montory: cruza ideal - diversidad genetica y calidad de ambas lineas."
+  ]},
+  "Avispado|Cuentista": {cal:"BUENO", lineas:[
+    " Bueno segun Montory",
+    "Requinto-Firpo (Avispado) x Malulo-Cuenta Cuentos (Cuentista) - Escandalo leve compartido.",
+    "Avispado trae la noble linea Requinto de gran calidad deportiva y morfologica.",
+    "Cuentista tiene base Malulo-Bellaco - diferente a la linea Requinto de Avispado.",
+    "Consanguinidad baja - solo Escandalo en generaciones lejanas.",
+    "La linea Requinto puede compensar y mejorar la descendencia de Cuentista.",
+    "Recomendacion de Montory: buena cruza. Avispado aportaria calidad deportiva a Cuentista."
+  ]},
+  "Avispado|Pillastrina": {cal:"MUY_BUENO", lineas:[
+    " Muy recomendado segun Montory",
+    "Requinto-Firpo (Avispado) x Cuenta Cuentos-Malulo (Pillastrina) - sin comunes criticos.",
+    "Avispado trae linea Requinto descendiente directo de Guante I - gran calidad.",
+    "Pillastrina tiene base Malulo-Cuenta Cuentos - linea Guante vaquera complementaria.",
+    "No se detectan ancestros comunes problematicos - buena diversidad genetica.",
+    "La cruza Requinto  Malulo produjo historicamente caballos de gran tipo y obra.",
+    "Recomendacion de Montory: muy buena opcion - dos lineas Guante distintas y complementarias."
+  ]},
+  "Avispado|Represa": {cal:"BUENO", lineas:[
+    " Bueno segun Montory",
+    "Requinto-Firpo (Avispado) x Afecto-Plebiscito (Represa) - Plebiscito y Escandalo compartidos.",
+    "Avispado tiene Plebiscito en su genealogia materna - Represa tambien lo tiene.",
+    "Consanguinidad leve en Plebiscito y Escandalo - no es critica pero debe notarse.",
+    "La linea Requinto de Avispado sigue siendo excelente complemento para Represa.",
+    "El resultado esperado es un ejemplar de buen tipo con calidad media-alta.",
+    "Recomendacion de Montory: buena cruza aunque con leve superposicion en Plebiscito."
+  ]},
+  "Avispado|Rustica": {cal:"BUENO", lineas:[
+    " Bueno segun Montory - Que Luna compartida",
+    "Requinto-Firpo (Avispado) x Talento-Malambo (Rustica) - Que Luna compartida.",
+    "Avispado tiene Que Luna en sus bisabuelos maternos - Rustica la tiene como bisabuela paterna.",
+    "Consanguinidad leve en Que Luna - segun Montory, esta yegua fue excepcional madre de la raza.",
+    "La presencia de Que Luna en ambos puede reforzar la calidad vaquera de la cria.",
+    "Talento padre de Rustica y Requinto abuelo de Avispado son de la misma familia Guante.",
+    "Recomendacion de Montory: buena cruza. La consanguinidad en Que Luna puede ser incluso positiva."
+  ]},
+  "Avispado|Protesta": {cal:"PRECAUCION", lineas:[
+    " Con precaucion segun Montory",
+    "Requinto-Firpo (Avispado) x Requinto-Ronaldo (Protesta) - Requinto compartido directamente.",
+    "Ambos tienen Requinto en primer nivel de abuelos - consanguinidad significativa.",
+    "Ademas comparten Arauco y Sorocha bisabuelos de Requinto en ambas lineas.",
+    "Esta cruza concentra en exceso la sangre Requinto-Guante en la genealogia de la cria.",
+    "Montory advierte: la consanguinidad en la familia Guante acentua el defecto de aplomos.",
+    "Recomendacion: preferir Avispado con Tincada, Trasnochada o Pillastrina en cambio."
+  ]},
+  "Avispado|Chinchilla": {cal:"MUY_BUENO", lineas:[
+    " Muy recomendado segun Montory",
+    "Requinto-Firpo (Avispado) x El Taita-Rotoso (Chinchilla T.E.) - sin comunes detectados.",
+    "Avispado trae sangre Requinto de gran calidad deportiva y tipo racial.",
+    "Chinchilla T.E. trae linea El Taita-Rotoso con buena morfologia y alzada.",
+    "Sin consanguinidad - dos lineas Guante completamente distintas que se complementan.",
+    "El Taita padre de Chinchilla produjo Llorona Gran Campeona de la Raza Valdivia 2013.",
+    "Recomendacion de Montory: excelente cruza - deportivo Requinto  morfologico El Taita."
+  ]},
+  "Veneno|Tincada": {cal:"BUENO", lineas:[
+    " Bueno segun Montory",
+    "Bajativo-Capuchino (Veneno) x Regalon-Estruendo (Tincada) - Esperando levemente compartido.",
+    "Veneno trae linea Bajativo-Capuchino de Las Callanas, activa y de calidad.",
+    "Tincada tiene Esperando en sus bisabuelos - Veneno tambien por linea materna.",
+    "Consanguinidad leve en Esperando - completamente normal en caballos modernos.",
+    "El resultado esperado es un ejemplar de calidad media con buen tipo chileno.",
+    "Recomendacion de Montory: cruza aceptable. Veneno es buen reproductor para Tincada."
+  ]},
+  "Veneno|Trasnochada": {cal:"MUY_BUENO", lineas:[
+    " Muy recomendado segun Montory",
+    "Bajativo-Capuchino (Veneno) x Festival-Escritor (Trasnochada) - sin comunes detectados.",
+    "Veneno trae linea Bajativo-Capuchino completamente distinta a la de Trasnochada.",
+    "Trasnochada tiene linea Festival-Estribillo que no se superpone con Veneno.",
+    "Sin consanguinidad problematica - buena diversidad genetica para la cria.",
+    "Esta cruza produciria un ejemplar de buen tipo con sangre fresca y variada.",
+    "Recomendacion de Montory: muy buena opcion para Veneno - lineas distintas y complementarias."
+  ]},
+  "Veneno|Cuentista": {cal:"BUENO", lineas:[
+    " Bueno segun Montory",
+    "Bajativo-Capuchino (Veneno) x Malulo-Cuenta Cuentos (Cuentista) - Esperando compartido.",
+    "Veneno y Cuentista comparten Esperando en generaciones lejanas - normal en la raza.",
+    "La linea Bajativo de Veneno es diferente a la base Malulo de Cuentista.",
+    "Consanguinidad baja - solo Esperando en bisabuelos y mas alla.",
+    "Veneno podria aportar calidad vaquera de Las Callanas a la descendencia de Cuentista.",
+    "Recomendacion de Montory: cruza aceptable. Preferir Veneno con Trasnochada o Chinchilla."
+  ]},
+  "Veneno|Pillastrina": {cal:"BUENO", lineas:[
+    " Bueno segun Montory",
+    "Bajativo-Capuchino (Veneno) x Cuenta Cuentos-Malulo (Pillastrina) - Esperando compartido.",
+    "Veneno y Pillastrina comparten Esperando levemente - normal en genealogias modernas.",
+    "La linea Bajativo-Capuchino de Veneno es completamente distinta a Malulo-Cuenta Cuentos.",
+    "Consanguinidad baja - la diversidad genetica es buena para esta cruza.",
+    "Veneno aportaria sangre de Las Callanas, criadero de gran tradicion en Chile.",
+    "Recomendacion de Montory: cruza aceptable. Veneno diversifica bien la linea de Pillastrina."
+  ]},
+  "Veneno|Represa": {cal:"MUY_BUENO", lineas:[
+    " Muy recomendado segun Montory",
+    "Bajativo-Capuchino (Veneno) x Afecto-Plebiscito (Represa) - sin ancestros comunes.",
+    "Veneno trae linea Bajativo de Las Callanas completamente diferente a Represa.",
+    "Represa tiene lineas Afecto-Plebiscito-Chamanto sin superposicion con Veneno.",
+    "Sin consanguinidad - maxima diversidad genetica para la cria.",
+    "Esta cruza produciria un ejemplar con sangre muy variada y buen vigor hibrido.",
+    "Recomendacion de Montory: muy buena cruza para Veneno - la mejor opcion con yeguas del criadero."
+  ]},
+  "Veneno|Rustica": {cal:"BUENO", lineas:[
+    " Bueno segun Montory",
+    "Bajativo-Capuchino (Veneno) x Talento-Malambo (Rustica) - Esperando compartido.",
+    "Veneno y Rustica comparten Esperando en generaciones lejanas - normal en la raza.",
+    "La linea Talento-Que Luna de Rustica es diferente y de gran calidad segun Montory.",
+    "Consanguinidad baja - solo Esperando que aparece en casi todos los caballos modernos.",
+    "Rustica con su linea Talento puede aportar gran calidad vaquera a la cria de Veneno.",
+    "Recomendacion de Montory: buena cruza. Rustica mejoraria la calidad vaquera de la descendencia."
+  ]},
+  "Veneno|Protesta": {cal:"BUENO", lineas:[
+    " Bueno segun Montory",
+    "Bajativo-Capuchino (Veneno) x Requinto-Ronaldo (Protesta) - Roto Choro leve compartido.",
+    "Veneno y Protesta comparten Roto Choro en generaciones lejanas - consanguinidad minima.",
+    "La linea Requinto de Protesta es distinta y de gran calidad a la linea Bajativo de Veneno.",
+    "Consanguinidad muy baja - buena diversidad genetica para esta cruza.",
+    "Protesta con su linea Requinto puede aportar elegancia y tipo racial a la cria.",
+    "Recomendacion de Montory: cruza aceptable. Buena complementariedad entre estas dos lineas."
+  ]},
+  "Veneno|Chinchilla": {cal:"MUY_BUENO", lineas:[
+    " Muy recomendado segun Montory",
+    "Bajativo-Capuchino (Veneno) x El Taita-Rotoso (Chinchilla T.E.) - sin comunes detectados.",
+    "Veneno trae linea Bajativo completamente distinta a la linea El Taita de Chinchilla.",
+    "Chinchilla T.E. con su linea Rotoso-El Taita aporta morfologia y alzada diferente.",
+    "Sin consanguinidad - excelente diversidad genetica para la cria.",
+    "La combinacion Las Callanas  El Bramido produciria un ejemplar de sangre muy variada.",
+    "Recomendacion de Montory: muy buena cruza para Veneno - la mejor complementariedad morfologica."
+  ]},
+  "Don Gustavo|Tincada": {cal:"BUENO", lineas:[
+    " Bueno segun Montory",
+    "Caballero-Malulo (Don Gustavo) x Regalon-Estruendo (Tincada) - Guinda y Esperando compartidos.",
+    "Don Gustavo tiene Esperando y Guinda por linea materna - Tincada tambien los tiene.",
+    "Consanguinidad leve en Esperando y Guinda - ambos aparecen frecuentemente en la raza.",
+    "La linea Caballero-Contulmo de Don Gustavo es diferente a la de Tincada.",
+    "Resultado esperado: exemplar de buen tipo con calidad media - cruza aceptable.",
+    "Recomendacion de Montory: aceptable. Preferir Don Gustavo con Trasnochada o Represa."
+  ]},
+  "Don Gustavo|Trasnochada": {cal:"MUY_BUENO", lineas:[
+    " Muy recomendado segun Montory",
+    "Caballero-Malulo (Don Gustavo) x Festival-Escritor (Trasnochada) - sin comunes detectados.",
+    "Don Gustavo trae linea Caballero-Contulmo con Malulo de buena calidad vaquera.",
+    "Trasnochada tiene linea Festival completamente distinta - sin superposicion.",
+    "Sin consanguinidad - maxima diversidad para la cria.",
+    "Esta cruza produciria un ejemplar con sangre variada y buen vigor hibrido.",
+    "Recomendacion de Montory: muy buena opcion para Don Gustavo - la mejor del criadero."
+  ]},
+  "Don Gustavo|Cuentista": {cal:"BUENO", lineas:[
+    " Bueno segun Montory - Malulo compartido",
+    "Caballero-Malulo (Don Gustavo) x Malulo-Cuenta Cuentos (Cuentista) - Malulo compartido.",
+    "Ambos tienen Malulo en su genealogia - Don Gustavo por abuela materna, Cuentista por abuelo paterno.",
+    "Consanguinidad media en Malulo - segun Montory gran transmisor de morfologia.",
+    "La acumulacion de Malulo puede reforzar el tipo racial pero tambien los defectos de aplomos.",
+    "Montory senala que Malulo transmite gran estampa - doble dosis puede ser positiva o negativa.",
+    "Recomendacion de Montory: evaluar bien. Preferir Don Gustavo con Trasnochada o Represa."
+  ]},
+  "Don Gustavo|Pillastrina": {cal:"PRECAUCION", lineas:[
+    " Con precaucion segun Montory",
+    "Caballero-Malulo (Don Gustavo) x Cuenta Cuentos-Malulo (Pillastrina) - Malulo y Esperando compartidos.",
+    "Ambos tienen Malulo en primer nivel de abuelos - consanguinidad significativa.",
+    "Ademas comparten Esperando y Guinda en bisabuelos - triple superposicion.",
+    "Esta cruza concentra en exceso la sangre Malulo-Bellaco-Guante en la cria.",
+    "Montory advierte que la familia Guante ya transmite tendencia a aplomos debiles.",
+    "Recomendacion: preferir Don Gustavo con Trasnochada, Represa o Protesta en cambio."
+  ]},
+  "Don Gustavo|Represa": {cal:"MUY_BUENO", lineas:[
+    " Muy recomendado segun Montory",
+    "Caballero-Malulo (Don Gustavo) x Afecto-Plebiscito (Represa) - sin comunes detectados.",
+    "Don Gustavo trae linea Caballero-Contulmo de Las Callanas con buena base Malulo.",
+    "Represa tiene lineas Afecto-Plebiscito-Chamanto completamente distintas.",
+    "Sin consanguinidad problematica - excelente diversidad genetica.",
+    "Represa aportaria sangre fresca y distinta que mejoraria la descendencia de Don Gustavo.",
+    "Recomendacion de Montory: muy buena cruza para Don Gustavo - lineas complementarias."
+  ]},
+  "Don Gustavo|Rustica": {cal:"BUENO", lineas:[
+    " Bueno segun Montory",
+    "Caballero-Malulo (Don Gustavo) x Talento-Malambo (Rustica) - Guinda y Esperando compartidos.",
+    "Don Gustavo y Rustica comparten Guinda y Esperando en bisabuelos - consanguinidad leve.",
+    "La linea Talento-Que Luna de Rustica es de gran calidad segun Montory.",
+    "Consanguinidad baja en ancestros comunes que aparecen frecuentemente en la raza.",
+    "Rustica puede aportar la calidad vaquera de Talento que complementaria a Don Gustavo.",
+    "Recomendacion de Montory: buena cruza. Rustica mejoraria la calidad vaquera del producto."
+  ]},
+  "Don Gustavo|Protesta": {cal:"MUY_BUENO", lineas:[
+    " Muy recomendado segun Montory",
+    "Caballero-Malulo (Don Gustavo) x Requinto-Ronaldo (Protesta) - sin comunes detectados.",
+    "Don Gustavo trae linea Malulo de Las Callanas - Protesta trae linea Requinto muy diferente.",
+    "Sin consanguinidad - dos ramas Guante completamente distintas que se complementan.",
+    "La combinacion Malulo  Requinto es de las mas diversas posibles en el criadero.",
+    "Esta cruza podria producir un ejemplar de gran tipo racial con calidad deportiva.",
+    "Recomendacion de Montory: excelente cruza - maxima diversidad Guante en el criadero."
+  ]},
+  "Don Gustavo|Chinchilla": {cal:"MUY_BUENO", lineas:[
+    " Muy recomendado segun Montory",
+    "Caballero-Malulo (Don Gustavo) x El Taita-Rotoso (Chinchilla T.E.) - sin comunes.",
+    "Don Gustavo trae linea Malulo-Caballero de Las Callanas - diferente a El Taita.",
+    "Chinchilla T.E. trae linea El Taita-Rotoso con buena morfologia y alzada.",
+    "Sin consanguinidad - excelente complementariedad entre estas dos lineas.",
+    "El Taita padre de Chinchilla produjo Llorona Gran Campeona de la Raza 2013.",
+    "Recomendacion de Montory: muy buena cruza - vaquero Las Callanas  morfologico El Bramido."
+  ]},
+  "Filamento|Tincada": {cal:"PRECAUCION", lineas:[
+    " Con precaucion segun Montory",
+    "Topeando-Canteado (Filamento) x Regalon-Estruendo (Tincada) - Remolienda, Guinda y Esperando compartidos.",
+    "Filamento tiene Esperando-Guinda-Remolienda por ambas lineas - Tincada tambien los tiene.",
+    "Consanguinidad media en tres ancestros comunes - Esperando, Guinda y Remolienda.",
+    "La acumulacion de estos ancestros puede reducir la variabilidad genetica de la cria.",
+    "Montory advierte que la familia Guante ya transmite tendencia a defectos de aplomos.",
+    "Recomendacion: preferir Filamento con Trasnochada, Protesta o Chinchilla en cambio."
+  ]},
+  "Filamento|Trasnochada": {cal:"MUY_BUENO", lineas:[
+    " Muy recomendado segun Montory",
+    "Topeando-Canteado (Filamento) x Festival-Escritor (Trasnochada) - sin comunes detectados.",
+    "Filamento trae linea Topeando-Canteado con Esperando-Guinda - diferente a Trasnochada.",
+    "Trasnochada tiene linea Festival completamente distinta - sin superposicion problematica.",
+    "Sin consanguinidad critica - buena diversidad genetica para esta cruza.",
+    "Esta cruza produciria un ejemplar con sangre variada y buen vigor hibrido.",
+    "Recomendacion de Montory: la mejor opcion para Filamento dentro del criadero."
+  ]},
+  "Filamento|Cuentista": {cal:"BUENO", lineas:[
+    " Bueno segun Montory - evaluar",
+    "Topeando-Pellejuda (Filamento) x Cuenta Cuentos-Pellejuda (Cuentista) - Esperando compartido.",
+    "Filamento y Cuentista comparten Esperando en generaciones lejanas.",
+    "Importante: Pillastrina madre de Cuento Loco es hermana de Cuentista - Filamento comparte madre con Pillastrina.",
+    "Si bien la consanguinidad no es critica, hay cierta superposicion por Pellejuda en Filamento.",
+    "Vigilar que la cria no acumule demasiada sangre de la linea Cuenta Cuentos-Pellejuda.",
+    "Recomendacion de Montory: aceptable con precaucion. Preferir Filamento con Trasnochada."
+  ]},
+  "Filamento|Pillastrina": {cal:"NO_RECOMENDADO", lineas:[
+    " No recomendado segun Montory",
+    "Topeando-Pellejuda (Filamento) x Cuenta Cuentos-Pellejuda (Pillastrina) - ALTA consanguinidad.",
+    "Filamento tiene Pellejuda como madre - Pillastrina tambien tiene Pellejuda como madre.",
+    "Ambos comparten Remolienda, Negrita, Chamullo, Esperando y Guinda en su genealogia.",
+    "Consanguinidad muy alta - la cria podria tener graves problemas de aplomos y vigor.",
+    "Montory advierte: la familia Guante ya transmite aplomos debiles - esto los agravaria.",
+    "Recomendacion de Montory: descartar completamente esta cruza. Son medio hermanos por madre."
+  ]},
+  "Filamento|Represa": {cal:"BUENO", lineas:[
+    " Bueno segun Montory",
+    "Topeando-Canteado (Filamento) x Afecto-Plebiscito (Represa) - Chamullo levemente compartido.",
+    "Filamento y Represa comparten Chamullo en generaciones lejanas - consanguinidad minima.",
+    "La linea Afecto-Plebiscito de Represa es bastante diferente a la de Filamento.",
+    "Consanguinidad baja - buena complementariedad entre estas dos lineas.",
+    "Represa aportaria sangre fresca y diversa que beneficiaria la descendencia de Filamento.",
+    "Recomendacion de Montory: buena cruza para Filamento - Represa es su mejor opcion del criadero."
+  ]},
+  "Filamento|Rustica": {cal:"PRECAUCION", lineas:[
+    " Con precaucion segun Montory",
+    "Topeando-Canteado (Filamento) x Talento-Malambo (Rustica) - Guinda, Canteado, Esperando y Taco compartidos.",
+    "Filamento y Rustica comparten cuatro ancestros: Guinda, Canteado, Esperando y Taco.",
+    "Consanguinidad media-alta - la acumulacion de estos ancestros es preocupante.",
+    "Canteado es abuelo de Filamento y bisabuelo de Rustica - superposicion importante.",
+    "Montory advierte que la familia Guante ya tiene tendencia a aplomos debiles.",
+    "Recomendacion: preferir Filamento con Trasnochada o Protesta - lineas mas diversas."
+  ]},
+  "Filamento|Protesta": {cal:"MUY_BUENO", lineas:[
+    " Muy recomendado segun Montory",
+    "Topeando-Canteado (Filamento) x Requinto-Ronaldo (Protesta) - sin comunes detectados.",
+    "Filamento trae linea Topeando-Canteado con base Guante-Catemina.",
+    "Protesta trae linea Requinto-Ronaldo descendiente de Guante I por via completamente distinta.",
+    "Sin consanguinidad - dos ramas Guante muy diferentes que se complementan bien.",
+    "Esta cruza aportaria elegancia y calidad deportiva de Requinto a la descendencia de Filamento.",
+    "Recomendacion de Montory: muy buena cruza - segunda mejor opcion para Filamento tras Trasnochada."
+  ]},
+  "Filamento|Chinchilla": {cal:"BUENO", lineas:[
+    " Bueno segun Montory",
+    "Topeando-Canteado (Filamento) x El Taita-Rotoso (Chinchilla T.E.) - Taco levemente compartido.",
+    "Filamento y Chinchilla comparten Taco en generaciones lejanas - consanguinidad minima.",
+    "La linea El Taita-Rotoso de Chinchilla es bastante diferente a la linea de Filamento.",
+    "Consanguinidad baja - buena diversidad para esta cruza.",
+    "El Taita padre de Chinchilla aporta morfologia y alzada que complementaria a Filamento.",
+    "Recomendacion de Montory: buena cruza. El Taita  Topeando produciria buen tipo morfologico."
+  ]},
+  "Aletazo II|Tincada": {cal:"MUY_BUENO", lineas:[
+    " Muy recomendado segun Montory",
+    "Bajativo-Malulo (Aletazo II) x Regalon-Estruendo (Tincada) - sin comunes detectados.",
+    "Aletazo II trae linea Bajativo-Capuchino con Malulo por via materna.",
+    "Tincada tiene linea Regalon-Estruendo completamente distinta a Aletazo II.",
+    "Sin consanguinidad - excelente diversidad genetica para la cria.",
+    "Esta cruza produciria un ejemplar con sangre variada y buen vigor hibrido.",
+    "Recomendacion de Montory: muy buena opcion para Aletazo II - maximo vigor hibrido."
+  ]},
+  "Aletazo II|Trasnochada": {cal:"MUY_BUENO", lineas:[
+    " Muy recomendado segun Montory",
+    "Bajativo-Malulo (Aletazo II) x Festival-Escritor (Trasnochada) - sin comunes detectados.",
+    "Aletazo II trae linea Bajativo-Malulo de Las Callanas distinta a la de Trasnochada.",
+    "Trasnochada tiene linea Festival-Estribillo sin superposicion con Aletazo II.",
+    "Sin consanguinidad - buena diversidad genetica para esta cruza.",
+    "La combinacion Las Callanas  Santa Clara de Huintil produciria gran diversidad.",
+    "Recomendacion de Montory: muy buena cruza para Aletazo II - junto con Tincada, la mejor opcion."
+  ]},
+  "Aletazo II|Cuentista": {cal:"PRECAUCION", lineas:[
+    " Con precaucion segun Montory",
+    "Bajativo-Malulo (Aletazo II) x Malulo-Bellaco-Cuenta Cuentos (Cuentista) - Malulo, Bellaco y Na Juana compartidos.",
+    "Ambos tienen Malulo y Bellaco en su genealogia - Aletazo II como abuelo materno, Cuentista como abuelo paterno.",
+    "Consanguinidad media en tres ancestros criticos: Malulo, Bellaco y Na Juana.",
+    "La acumulacion de sangre Malulo-Bellaco puede acentuar defectos de aplomos segun Montory.",
+    "Montory senala que Malulo es gran transmisor pero su doble presencia puede ser problematica.",
+    "Recomendacion: preferir Aletazo II con Tincada, Trasnochada, Represa o Protesta."
+  ]},
+  "Aletazo II|Pillastrina": {cal:"PRECAUCION", lineas:[
+    " Con precaucion segun Montory",
+    "Bajativo-Malulo (Aletazo II) x Cuenta Cuentos-Malulo (Pillastrina) - Malulo, Bellaco y Na Juana compartidos.",
+    "Aletazo II tiene Malulo como abuelo materno - Pillastrina tiene Malulo como abuelo paterno.",
+    "Consanguinidad media-alta en Malulo, Bellaco y Na Juana - tres ancestros comunes criticos.",
+    "Esta cruza concentra en exceso la sangre Malulo-Bellaco que ya tiene Aletazo II.",
+    "Montory advierte sobre acumulacion de defectos hereditarios de la familia Guante-Malulo.",
+    "Recomendacion: desaconsejar esta cruza. Usar Aletazo II con Tincada, Trasnochada o Protesta."
+  ]},
+  "Aletazo II|Represa": {cal:"MUY_BUENO", lineas:[
+    " Muy recomendado segun Montory",
+    "Bajativo-Malulo (Aletazo II) x Afecto-Plebiscito (Represa) - sin comunes detectados.",
+    "Aletazo II trae linea Bajativo-Malulo completamente diferente a la de Represa.",
+    "Represa tiene lineas Afecto-Plebiscito-Chamanto sin superposicion con Aletazo II.",
+    "Sin consanguinidad - excelente diversidad genetica para la cria.",
+    "Represa aportaria sangre fresca que diversificaria la descendencia de Aletazo II.",
+    "Recomendacion de Montory: muy buena cruza - junto con Tincada y Trasnochada, la mejor opcion."
+  ]},
+  "Aletazo II|Rustica": {cal:"BUENO", lineas:[
+    " Bueno segun Montory",
+    "Bajativo-Malulo (Aletazo II) x Talento-Malambo (Rustica) - Canteado levemente compartido.",
+    "Aletazo II y Rustica comparten Canteado en bisabuelos - consanguinidad baja.",
+    "La linea Talento-Que Luna de Rustica es de gran calidad segun Montory.",
+    "Consanguinidad baja - la presencia de Canteado no es preocupante.",
+    "Rustica con Talento puede aportar calidad vaquera que mejoraria la descendencia de Aletazo II.",
+    "Recomendacion de Montory: buena cruza. Rustica mejoraria significativamente la calidad de la cria."
+  ]},
+  "Aletazo II|Protesta": {cal:"MUY_BUENO", lineas:[
+    " Muy recomendado segun Montory",
+    "Bajativo-Malulo (Aletazo II) x Requinto-Ronaldo (Protesta) - sin comunes detectados.",
+    "Aletazo II trae linea Bajativo-Malulo de Las Callanas - muy diferente a Requinto.",
+    "Protesta trae la noble linea Requinto descendiente directo de Guante I.",
+    "Sin consanguinidad - maxima diversidad entre estas dos lineas Guante distintas.",
+    "La combinacion Malulo  Requinto es de las mas equilibradas y diversas del criadero.",
+    "Recomendacion de Montory: excelente cruza para Aletazo II - Protesta aporta nobleza Requinto."
+  ]},
+  "Aletazo II|Chinchilla": {cal:"BUENO", lineas:[
+    " Bueno segun Montory",
+    "Bajativo-Malulo (Aletazo II) x El Taita-Rotoso (Chinchilla T.E.) - Bellaco levemente compartido.",
+    "Aletazo II tiene Bellaco en bisabuelos maternos - Chinchilla T.E. tambien lo tiene.",
+    "Consanguinidad leve en Bellaco - padre de Malulo, aparece frecuentemente en la raza.",
+    "La linea El Taita-Rotoso de Chinchilla es diferente y aporta morfologia y alzada.",
+    "Consanguinidad baja - la diversidad es suficiente para una buena cria.",
+    "Recomendacion de Montory: buena cruza. El Taita x Bajativo produciria buen tipo morfologico."
+  ]},
+  "Delito|Pironela": {cal:"MUY_BUENO", lineas:[
+    "Muy recomendado segun Montory",
+    "Escorpion-Estribillo (Delito) x Requinto-El Taita (Pironela) - lineas distintas de Guante.",
+    "Delito trae linea Escorpion-Estribillo de gran calidad deportiva.",
+    "Pironela trae linea Requinto por padre y El Taita por abuelo materno - sangre variada.",
+    "Sin consanguinidad critica - dos ramas Guante distintas que se complementan muy bien.",
+    "Pironela aun es joven - esta cruza seria para cuando alcance edad reproductiva.",
+    "Recomendacion de Montory: muy buena combinacion - deportivo Escorpion x elegante Requinto."
+  ]},
+  "Delito|Potranca Cacique": {cal:"BUENO", lineas:[
+    "Bueno segun Montory - Estribillo levemente compartido",
+    "Escorpion-Estribillo (Delito) x Cacique-Chinchilla T.E. (Potranca Cacique) - Estribillo compartido.",
+    "Potranca Cacique tiene Estribillo por via Cacique-Espejo - Delito lo tiene por Escorpion.",
+    "Consanguinidad leve en Estribillo - normal en caballos modernos, no es problematica.",
+    "La linea El Taita-Rotoso de Chinchilla T.E. aporta morfologia distinta a Delito.",
+    "Potranca Cacique aun es joven - esta cruza seria para cuando alcance edad reproductiva.",
+    "Recomendacion de Montory: buena cruza con potencial. Vigilar leve consanguinidad en Estribillo."
+  ]},
+  "Avispado|Pironela": {cal:"PRECAUCION", lineas:[
+    "Con precaucion segun Montory - Requinto compartido",
+    "Requinto-Firpo (Avispado) x Requinto-Peleco Mono Mono (Pironela) - Requinto compartido.",
+    "Ambos tienen Requinto directamente - Avispado como abuelo, Pironela como bisabuelo.",
+    "Ademas comparten Arauco y Sorocha en la linea Requinto - triple superposicion.",
+    "Consanguinidad media - puede concentrar en exceso sangre Requinto en la cria.",
+    "Montory advierte que la familia Guante ya tiene tendencia a defectos de aplomos.",
+    "Recomendacion: preferir Avispado con otras yeguas - Pironela tiene demasiado Requinto."
+  ]},
+  "Avispado|Potranca Cacique": {cal:"MUY_BUENO", lineas:[
+    "Muy recomendado segun Montory",
+    "Requinto-Firpo (Avispado) x Cacique-Chinchilla T.E. (Potranca Cacique) - sin comunes criticos.",
+    "Avispado trae linea Requinto de gran calidad deportiva descendiente de Guante I.",
+    "Potranca Cacique trae linea Cacique-El Taita-Rotoso muy diferente a la de Avispado.",
+    "Sin consanguinidad problematica - excelente complementariedad entre estas lineas.",
+    "La combinacion Requinto x El Taita produciria un ejemplar de gran tipo y calidad.",
+    "Recomendacion de Montory: muy buena cruza - lineas Guante distintas que se potencian."
+  ]},
+  "Veneno|Pironela": {cal:"MUY_BUENO", lineas:[
+    "Muy recomendado segun Montory",
+    "Bajativo-Capuchino (Veneno) x Requinto-El Taita (Pironela) - sin comunes detectados.",
+    "Veneno trae linea Bajativo completamente distinta a la linea Requinto de Pironela.",
+    "Pironela tiene Requinto por padre y El Taita por abuelo materno - sangre elegante.",
+    "Sin consanguinidad - maxima diversidad genetica para esta cruza.",
+    "La combinacion Las Callanas x Requinto-El Taita produciria gran variedad genetica.",
+    "Recomendacion de Montory: excelente cruza para Veneno - Pironela aporta nobleza Requinto."
+  ]},
+  "Veneno|Potranca Cacique": {cal:"MUY_BUENO", lineas:[
+    "Muy recomendado segun Montory",
+    "Bajativo-Capuchino (Veneno) x Cacique-El Taita (Potranca Cacique) - sin comunes criticos.",
+    "Veneno trae linea Bajativo-Capuchino de Las Callanas muy diferente a Cacique.",
+    "Potranca Cacique tiene linea El Taita-Rotoso-Bellaco por su madre Chinchilla T.E.",
+    "Sin consanguinidad problematica - buena diversidad para esta cruza.",
+    "Esta combinacion juntaria sangre del sur con sangre de El Bramido - variedad optima.",
+    "Recomendacion de Montory: muy buena cruza - maxima diversidad entre estas dos lineas."
+  ]},
+  "Don Gustavo|Pironela": {cal:"MUY_BUENO", lineas:[
+    "Muy recomendado segun Montory",
+    "Caballero-Malulo (Don Gustavo) x Requinto-El Taita (Pironela) - sin comunes detectados.",
+    "Don Gustavo trae linea Malulo de Las Callanas muy distinta a la linea Requinto.",
+    "Pironela aporta elegancia Requinto y morfologia El Taita - complemento ideal para Malulo.",
+    "Sin consanguinidad - excelente diversidad genetica para la cria.",
+    "La combinacion Malulo x Requinto es de las mas equilibradas posibles en la raza.",
+    "Recomendacion de Montory: muy buena cruza - vaquero Malulo x elegante Requinto."
+  ]},
+  "Don Gustavo|Potranca Cacique": {cal:"BUENO", lineas:[
+    "Bueno segun Montory",
+    "Caballero-Malulo (Don Gustavo) x Cacique-Chinchilla T.E. (Potranca Cacique) - Bellaco compartido.",
+    "Don Gustavo tiene Malulo como abuelo materno - Potranca Cacique tiene Bellaco por Chinchilla T.E.",
+    "Bellaco es padre de Malulo - hay consanguinidad leve entre estas lineas.",
+    "Consanguinidad baja - la diversidad es suficiente para una buena cria.",
+    "La linea Cacique-El Taita aporta morfologia diferente que complementa a Don Gustavo.",
+    "Recomendacion de Montory: buena cruza. Preferir Don Gustavo con Pironela o Trasnochada."
+  ]},
+  "Filamento|Pironela": {cal:"MUY_BUENO", lineas:[
+    "Muy recomendado segun Montory",
+    "Topeando-Canteado (Filamento) x Requinto-El Taita (Pironela) - sin comunes detectados.",
+    "Filamento trae linea Topeando-Canteado con base Esperando-Guinda.",
+    "Pironela trae Requinto y El Taita - lineas completamente distintas a las de Filamento.",
+    "Sin consanguinidad critica - buena diversidad para esta cruza.",
+    "Esta es una de las mejores opciones para Filamento dado que Pironela aporta sangre nueva.",
+    "Recomendacion de Montory: muy buena cruza para Filamento - segunda mejor tras Trasnochada."
+  ]},
+  "Filamento|Potranca Cacique": {cal:"BUENO", lineas:[
+    "Bueno segun Montory",
+    "Topeando-Canteado (Filamento) x Cacique-Chinchilla T.E. (Potranca Cacique) - Taco compartido.",
+    "Filamento y Potranca Cacique comparten Taco en generaciones lejanas - consanguinidad minima.",
+    "La linea Cacique-El Taita de Potranca Cacique es diferente a la linea de Filamento.",
+    "Consanguinidad baja - buena diversidad para esta cruza.",
+    "Potranca Cacique aporta morfologia El Taita que complementaria bien a Filamento.",
+    "Recomendacion de Montory: buena cruza. El Taita x Topeando produciria buen tipo morfologico."
+  ]},
+  "Aletazo II|Pironela": {cal:"MUY_BUENO", lineas:[
+    "Muy recomendado segun Montory",
+    "Bajativo-Malulo (Aletazo II) x Requinto-El Taita (Pironela) - sin comunes detectados.",
+    "Aletazo II trae linea Bajativo-Malulo de Las Callanas muy distinta a Requinto.",
+    "Pironela aporta elegancia Requinto descendiente de Guante I y morfologia El Taita.",
+    "Sin consanguinidad - maxima diversidad entre estas dos lineas Guante distintas.",
+    "La combinacion Malulo x Requinto es de las mas equilibradas de la raza segun Montory.",
+    "Recomendacion de Montory: excelente cruza para Aletazo II - Pironela aporta la mejor sangre."
+  ]},
+  "Aletazo II|Potranca Cacique": {cal:"PRECAUCION", lineas:[
+    "Con precaucion segun Montory - Bellaco compartido",
+    "Bajativo-Malulo (Aletazo II) x Cacique-Chinchilla T.E. (Potranca Cacique) - Bellaco compartido.",
+    "Aletazo II tiene Malulo como abuelo materno y Bellaco como bisabuelo.",
+    "Potranca Cacique tiene Bellaco por su madre Chinchilla T.E. - superposicion notable.",
+    "Consanguinidad media en Bellaco - la acumulacion Malulo-Bellaco es preocupante aqui.",
+    "Montory advierte que la acumulacion de esta linea puede acentuar defectos de aplomos.",
+    "Recomendacion: preferir Aletazo II con Pironela, Tincada o Trasnochada en cambio."
+  ]}
+};
+function getMontorySimulador(potro, yegua) {
+  var key1 = potro + "|" + yegua;
+  var key2 = yegua + "|" + potro;
+  var data = CRUCES_MONTORY[key1] || CRUCES_MONTORY[key2];
+  if (!data) return "";
+
+  var bgColor = data.cal === "MUY_BUENO" ? "#f0fff4" : data.cal === "BUENO" ? "#fffde7" : data.cal === "PRECAUCION" ? "#fff3e0" : "#fff5f5";
+  var borderColor = data.cal === "MUY_BUENO" ? "#2d8f63" : data.cal === "BUENO" ? "#f0a500" : data.cal === "PRECAUCION" ? "#e65100" : "#c0392b";
+
+  var html = '<div class="montory-panel" style="background:' + bgColor + ';border-color:' + borderColor + ';margin-top:14px">';
+  html += '<div class="montory-title"> Analisis Montory - ' + potro + '  ' + yegua + '</div>';
+  html += '<div class="montory-text">';
+  for (var i = 0; i < data.lineas.length; i++) {
+    html += '<div class="montory-line">' + (i === 0 ? '<b>' : '') + data.lineas[i] + (i === 0 ? '</b>' : '') + '</div>';
+  }
+  html += '</div></div>';
+  return html;
+}
 
 // ===== CAMBIO DE CLAVE =====
 var newPin = "", confPin = "";
