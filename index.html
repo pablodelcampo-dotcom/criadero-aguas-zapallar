@@ -1147,9 +1147,9 @@ function buildGenHtml(clasif, comunes) {
       var gP = genNames[nP] || ("gen "+nP);
       var gM = genNames[nM] || ("gen "+nM);
       var gen_desc = (nP === nM)
-        ? (nP === 3 ? "abuelos de la cria por ambos lados"
-           : nP === 4 ? "bisabuelos de la cria por ambos lados"
-           : nP === 5 ? "tatarabuelos de la cria por ambos lados"
+        ? (nP === 3 ? "bisabuelos de la cria por ambos lados"
+           : nP === 4 ? "tatarabuelos de la cria por ambos lados"
+           : nP === 5 ? "quintabuelos de la cria por ambos lados"
            : gP+" de la cria por ambos lados")
         : (gP+" del potro / "+gM+" de la yegua");
       var star = c.esCalidad ? " — STAR Reproductor Montory" : "";
@@ -1807,26 +1807,26 @@ var INBREEDING_INDIVIDUAL = {
   "Trasnochada":      {tipo:"OUTCROSS", comunes:[]},
   "Cuentista":        {tipo:"OUTCROSS", comunes:[]},
   "Pillastrina":      {tipo:"LINEBREEDING DIRIGIDO", comunes:[
-    {nombre:"Esperando",nota:"4x4",calidad:true,desc:"bisabuelo paterno y bisabuelo materno"}
+    {nombre:"Esperando",nota:"3x3",calidad:true,desc:"bisabuelo paterno y bisabuelo materno"}
   ]},
   "Represa":          {tipo:"OUTCROSS", comunes:[]},
   "Rustica":          {tipo:"OUTCROSS", comunes:[]},
   "Protesta":         {tipo:"OUTCROSS", comunes:[]},
   "Chinchilla T.E.":  {tipo:"OUTCROSS", comunes:[]},
   "Delito":           {tipo:"LINEBREEDING DIRIGIDO", comunes:[
-    {nombre:"Estribillo",nota:"4x4",calidad:true,desc:"bisabuelo paterno y bisabuelo materno"}
+    {nombre:"Estribillo",nota:"3x3",calidad:true,desc:"bisabuelo paterno y bisabuelo materno"}
   ]},
   "Avispado":         {tipo:"OUTCROSS", comunes:[]},
   "Veneno":           {tipo:"OUTCROSS", comunes:[]},
   "Don Gustavo":      {tipo:"OUTCROSS", comunes:[]},
   "Filamento":        {tipo:"LINEBREEDING DIRIGIDO", comunes:[
-    {nombre:"Esperando",nota:"4x4",calidad:true,desc:"bisabuelo paterno y bisabuelo materno"},
-    {nombre:"Guinda",nota:"4x4",calidad:true,desc:"bisabuela paterna y bisabuela materna"}
+    {nombre:"Esperando",nota:"3x3",calidad:true,desc:"bisabuelo paterno y bisabuelo materno"},
+    {nombre:"Guinda",nota:"3x3",calidad:true,desc:"bisabuela paterna y bisabuela materna"}
   ]},
   "Aletazo II":       {tipo:"OUTCROSS", comunes:[]},
   "Inquieto":         {tipo:"OUTCROSS", comunes:[]},
   "Cuento Loco":      {tipo:"LINEBREEDING DIRIGIDO", comunes:[
-    {nombre:"Malulo",nota:"4x4",calidad:true,desc:"bisabuelo paterno (via Chiloco) y bisabuelo materno (via Pillastrina)"}
+    {nombre:"Malulo",nota:"3x3",calidad:true,desc:"bisabuelo paterno (via Chiloco) y bisabuelo materno (via Pillastrina)"}
   ]},
   "Cuento Falso":     {tipo:"OUTCROSS", comunes:[]},
   "Pironela":         {tipo:"OUTCROSS", comunes:[]},
