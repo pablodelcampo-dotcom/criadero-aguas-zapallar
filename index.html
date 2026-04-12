@@ -671,23 +671,31 @@ function arbolHTML(nombre, padre, madre, ap, am, etiqueta, tatAP, tatAM) {
 
 // ===== MOSTRAR DETALLE =====
 function showDetalle(id, panelId) {
-  var c = CABALLOS.find(function(x) { return x.id === id; });
-  if (!c) return;
-  var avCls = c.sexo === "f" ? "av-f" : c.rol === "cria" ? "av-c" : c.rol === "externo" ? "av-e" : "av-m";
-  var panel = document.getElementById(panelId);
-  if (!panel) return;
-  var html = '<div class="detail-card">';
-  html += '<div class="detail-head">';
-  html += '<div class="detail-av ' + avCls + '">' + c.nombre.substring(0,2).toUpperCase() + '</div>';
-  html += '<div><div class="detail-name">' + c.nombre + '</div>';
-  html += '<div class="detail-meta">' + c.criadero + ' - N ' + c.n + ' - ' + c.fn + '</div>';
-  html += '<div style="margin-top:6px">' + badgesHtml(c) + '</div></div></div>';
-  html += '<div style="font-size:11px;font-weight:500;color:var(--verde-oscuro);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px">Genealogia</div>';
-  html += arbolHTML(c.nombre, c.padre, c.madre, c.ap, c.am, "");
-  html += getMontoryHTML(c.nombre, c.ap, c.am);
-  html += '</div>';
-  panel.innerHTML = html;
-  panel.scrollIntoView({behavior:"smooth",block:"nearest"});
+  try {
+    var c = null;
+    for (var ci2 = 0; ci2 < CABALLOS.length; ci2++) {
+      if (CABALLOS[ci2].id === id) { c = CABALLOS[ci2]; break; }
+    }
+    if (!c) return;
+    var avCls = c.sexo === "f" ? "av-f" : c.rol === "cria" ? "av-c" : c.rol === "externo" ? "av-e" : "av-m";
+    var panel = document.getElementById(panelId);
+    if (!panel) return;
+    var html = '<div class="detail-card">';
+    html += '<div class="detail-head">';
+    html += '<div class="detail-av ' + avCls + '">' + c.nombre.substring(0,2).toUpperCase() + '</div>';
+    html += '<div><div class="detail-name">' + c.nombre + '</div>';
+    html += '<div class="detail-meta">' + c.criadero + ' - N ' + c.n + ' - ' + c.fn + '</div>';
+    html += '<div style="margin-top:6px">' + badgesHtml(c) + '</div></div></div>';
+    html += '<div style="font-size:11px;font-weight:500;color:var(--verde-oscuro);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px">Genealogia</div>';
+    html += arbolHTML(c.nombre, c.padre, c.madre, c.ap, c.am, "");
+    try { html += getMontoryHTML(c.nombre, c.ap, c.am); } catch(e2) { /* Montory opcional */ }
+    html += '</div>';
+    panel.innerHTML = html;
+    panel.scrollIntoView({behavior:"smooth",block:"nearest"});
+  } catch(e) {
+    var panel2 = document.getElementById(panelId);
+    if (panel2) panel2.innerHTML = '<div style="padding:10px;color:red;font-size:12px">Error al cargar detalle.</div>';
+  }
 }
 
 // ===== CRIA PROYECTADA =====
@@ -730,13 +738,20 @@ function renderGrid(lista) {
   if (!g) return;
   g.innerHTML = lista.map(function(c) {
     var avCls = c.sexo === "f" ? "av-f" : c.rol === "cria" ? "av-c" : c.rol === "externo" ? "av-e" : "av-m";
-    return '<div class="hcard" onclick="showDetalle(\'' + c.id + '\',\'cab-detalle-panel\')">' +
+    return '<div class="hcard" data-id="' + c.id + '">' +
       '<div class="av ' + avCls + '">' + c.nombre.substring(0,2).toUpperCase() + '</div>' +
       '<div class="hcard-name">' + c.nombre + '</div>' +
       '<div class="hcard-meta">N ' + c.n + ' - ' + c.fn + '</div>' +
       badgesHtml(c) + '</div>';
   }).join("");
   document.getElementById("cab-detalle-panel").innerHTML = "";
+  // Asignar eventos después de insertar el HTML
+  var cards = g.querySelectorAll(".hcard");
+  for (var i = 0; i < cards.length; i++) {
+    cards[i].addEventListener("click", function() {
+      showDetalle(this.getAttribute("data-id"), "cab-detalle-panel");
+    });
+  }
 }
 
 function filtrar(tipo, btn) {
