@@ -881,121 +881,127 @@ var TATARABUELOS = {
   "Potranca Cacique": {ap:"Estribillo/Alborada/Rico Raco/Camarera/Estribo/Reserva/Nidal/Enojadita", am:"Rotoso/Tranquera/Bellaco/Alqueria/Huasamaco/Santa Barbara/Domino/Escupeta"}
 };
 
-// Reproductores de calidad Montory para detectar linebreeding dirigido
+// Reproductores de calidad Montory
 var REPRODUCTORES_CALIDAD = [
-  "Estribillo","Talento","Malulo","Que Luna","Requinto","Esperando","Guinda",
-  "Bellaco","Taco","Escorpion","El Taita","Rotoso","Bajativo","Capuchino",
-  "Chiloco","Estruendo","Malambo","Papayero","Borracho en Dgo.","Plebiscito"
+  "estribillo","talento","malulo","que luna","requinto","esperando","guinda",
+  "bellaco","taco","escorpion","el taita","rotoso","bajativo","capuchino",
+  "chiloco","estruendo","malambo","borracho en dgo","plebiscito","canteado"
 ];
 
-function calcularInbreeding(potro, yegua, apPotro, amPotro, apYegua, amYegua, tatPotro, tatYegua) {
-  // Construir genealogias con generacion
-  // Gen 1: padre/madre (gen 1)
-  // Gen 2: abuelos (gen 2)
-  // Gen 3: bisabuelos (gen 3)
-  // Gen 4: tatarabuelos (gen 4)
-
-  function parseGen(arr, gen) {
-    var res = [];
-    if (!arr) return res;
-    var parts = typeof arr === "string" ? arr.split("/") : arr;
-    for (var i = 0; i < parts.length; i++) {
-      var n = parts[i].trim();
-      if (n && n !== "-") res.push({nombre:n.toLowerCase(), gen:gen});
-    }
-    return res;
+function buildPed(padre, abuelos, tatAP, tatAM) {
+  var ped = {};
+  function add(n, g) {
+    n = n.trim().toLowerCase();
+    if (!n || n==="-" || n.length<3 || n.indexOf("reg")>-1 || n.indexOf("inex")>-1) return;
+    if (!(n in ped) || g < ped[n]) ped[n] = g;
   }
+  add(padre, 1);
+  var ab = abuelos ? abuelos.split("/") : [];
+  if (ab[0]) add(ab[0], 2);
+  if (ab[1]) add(ab[1], 2);
+  if (ab[2]) add(ab[2], 3);
+  if (ab[3]) add(ab[3], 3);
+  if (ab[4]) add(ab[4], 3);
+  if (ab[5]) add(ab[5], 3);
+  if (tatAP) { var t = tatAP.split("/"); for (var i=0;i<t.length;i++) add(t[i],4); }
+  if (tatAM) { var t2 = tatAM.split("/"); for (var i=0;i<t2.length;i++) add(t2[i],4); }
+  return ped;
+}
 
-  var linPotro = [];
-  linPotro.push({nombre:potro.toLowerCase(), gen:0});
-  linPotro = linPotro.concat(parseGen(apPotro.split("/"), 2));
-  linPotro = linPotro.concat(parseGen(amPotro.split("/"), 2));
+function calcularInbreeding(pN, mN, apPotro, amPotro, apYegua, amYegua, tatPotro, tatYegua) {
+  // Construir pedigree completo de cada lado
+  // Linea paterna de la cria = pedigree del potro (sus abuelos son gen2 de la cria)
+  var pedP = {};
+  function addP(n, g) {
+    n = n.trim().toLowerCase();
+    if (!n || n==="-" || n.length<3 || n.indexOf("reg")>-1 || n.indexOf("inex")>-1) return;
+    if (!(n in pedP) || g < pedP[n]) pedP[n] = g;
+  }
+  addP(pN, 1);
+  var apArr = apPotro ? apPotro.split("/") : [];
+  var amArr = amPotro ? amPotro.split("/") : [];
+  for (var i=0;i<2&&i<apArr.length;i++) addP(apArr[i], 2);
+  for (var i=0;i<2&&i<amArr.length;i++) addP(amArr[i], 2);
+  for (var i=2;i<6&&i<apArr.length;i++) addP(apArr[i], 3);
+  for (var i=2;i<6&&i<amArr.length;i++) addP(amArr[i], 3);
   if (tatPotro) {
-    linPotro = linPotro.concat(parseGen(tatPotro.ap, 4));
-    linPotro = linPotro.concat(parseGen(tatPotro.am, 4));
+    var tp = tatPotro.ap ? tatPotro.ap.split("/") : [];
+    var tm = tatPotro.am ? tatPotro.am.split("/") : [];
+    for (var i=0;i<tp.length;i++) addP(tp[i], 4);
+    for (var i=0;i<tm.length;i++) addP(tm[i], 4);
   }
 
-  var linYegua = [];
-  linYegua.push({nombre:yegua.toLowerCase(), gen:0});
-  linYegua = linYegua.concat(parseGen(apYegua.split("/"), 2));
-  linYegua = linYegua.concat(parseGen(amYegua.split("/"), 2));
+  // Linea materna de la cria = pedigree de la yegua
+  var pedM = {};
+  function addM(n, g) {
+    n = n.trim().toLowerCase();
+    if (!n || n==="-" || n.length<3 || n.indexOf("reg")>-1 || n.indexOf("inex")>-1) return;
+    if (!(n in pedM) || g < pedM[n]) pedM[n] = g;
+  }
+  addM(mN, 1);
+  var apYArr = apYegua ? apYegua.split("/") : [];
+  var amYArr = amYegua ? amYegua.split("/") : [];
+  for (var i=0;i<2&&i<apYArr.length;i++) addM(apYArr[i], 2);
+  for (var i=0;i<2&&i<amYArr.length;i++) addM(amYArr[i], 2);
+  for (var i=2;i<6&&i<apYArr.length;i++) addM(apYArr[i], 3);
+  for (var i=2;i<6&&i<amYArr.length;i++) addM(amYArr[i], 3);
   if (tatYegua) {
-    linYegua = linYegua.concat(parseGen(tatYegua.ap, 4));
-    linYegua = linYegua.concat(parseGen(tatYegua.am, 4));
+    var tp2 = tatYegua.ap ? tatYegua.ap.split("/") : [];
+    var tm2 = tatYegua.am ? tatYegua.am.split("/") : [];
+    for (var i=0;i<tp2.length;i++) addM(tp2[i], 4);
+    for (var i=0;i<tm2.length;i++) addM(tm2[i], 4);
   }
 
-  // Abuelos (gen 2) divididos en paternos/maternos
-  var apArr = apPotro.split("/").map(function(s){return s.trim().toLowerCase();});
-  var amArr = amPotro.split("/").map(function(s){return s.trim().toLowerCase();});
-  var apYArr = apYegua.split("/").map(function(s){return s.trim().toLowerCase();});
-  var amYArr = amYegua.split("/").map(function(s){return s.trim().toLowerCase();});
-
-  // Buscar coincidencias
+  // Buscar ancestros comunes — cada uno con su generacion correcta en cada linea
   var comunes = [];
-  for (var i = 0; i < linPotro.length; i++) {
-    var np = linPotro[i];
-    if (!np.nombre || np.nombre === "-" || np.nombre.length < 3) continue;
-    for (var j = 0; j < linYegua.length; j++) {
-      var ny = linYegua[j];
-      if (np.nombre === ny.nombre) {
-        // Calcular generacion en cada linea
-        var genP = np.gen === 0 ? 1 : np.gen;
-        var genY = ny.gen === 0 ? 1 : ny.gen;
-        // Notacion: generacion en padre x generacion en madre de la CRIA
-        // Cria gen 1 = padres, gen 2 = abuelos...
-        // El potro es gen 1, sus abuelos gen 2, bisabuelos gen 3
-        var notaP = genP === 0 ? 1 : (genP === 2 ? 2 : (genP === 3 ? 3 : 4));
-        var notaY = genY === 0 ? 1 : (genY === 2 ? 2 : (genY === 3 ? 3 : 4));
-        // Verificar si ya esta registrado
-        var yaEsta = false;
-        for (var k = 0; k < comunes.length; k++) {
-          if (comunes[k].nombre === np.nombre) { yaEsta = true; break; }
-        }
-        if (!yaEsta) {
-          var esCalidad = REPRODUCTORES_CALIDAD.indexOf(
-            np.nombre.charAt(0).toUpperCase() + np.nombre.slice(1)
-          ) > -1;
-          comunes.push({
-            nombre: np.nombre.charAt(0).toUpperCase() + np.nombre.slice(1),
-            notaP: notaP,
-            notaY: notaY,
-            esCalidad: esCalidad
-          });
-        }
-      }
+  var vistos = {};
+  for (var nombre in pedP) {
+    if (nombre in pedM && !vistos[nombre]) {
+      var gp = pedP[nombre];
+      var gm = pedM[nombre];
+      // Excluir si ambos son gen1 (son los padres mismos, no inbreeding)
+      if (gp === 1 && gm === 1) continue;
+      vistos[nombre] = true;
+      var cal = REPRODUCTORES_CALIDAD.indexOf(nombre) > -1;
+      comunes.push({
+        nombre: nombre.charAt(0).toUpperCase() + nombre.slice(1),
+        notaP: gp,
+        notaY: gm,
+        esCalidad: cal
+      });
     }
   }
 
+  // Ordenar por intensidad (mas cercanos primero)
+  comunes.sort(function(a,b){ return (a.notaP+a.notaY) - (b.notaP+b.notaY); });
   return comunes;
 }
 
 function clasificarCruza(comunes) {
-  if (comunes.length === 0) return {tipo:"OUTCROSS", color:"#1b5e20", icono:""};
+  if (comunes.length === 0) return {tipo:"OUTCROSS", color:"#2e7d32", icono:"⬜"};
 
-  // Verificar intensidad
-  var maxIntensidad = 0;
+  var maxIntens = 0;
   var tieneCalidad = false;
   var soloCalidad = true;
 
-  for (var i = 0; i < comunes.length; i++) {
+  for (var i=0; i<comunes.length; i++) {
     var c = comunes[i];
-    var intens = (5 - c.notaP) + (5 - c.notaY); // mayor = mas intenso
-    if (intens > maxIntensidad) maxIntensidad = intens;
+    var intens = (5 - c.notaP) + (5 - c.notaY);
+    if (intens > maxIntens) maxIntens = intens;
     if (c.esCalidad) tieneCalidad = true;
     if (!c.esCalidad) soloCalidad = false;
   }
 
-  // Clasificar
-  if (maxIntensidad >= 6) { // 2x2 o 2x3
-    if (tieneCalidad && soloCalidad) return {tipo:"INBREEDING DIRIGIDO", color:"#e65100", icono:""};
-    return {tipo:"INBREEDING", color:"#c62828", icono:""};
-  } else if (maxIntensidad >= 4) { // 3x3 o 3x4
-    if (tieneCalidad && soloCalidad) return {tipo:"LINEBREEDING DIRIGIDO", color:"#2d8f63", icono:""};
-    if (tieneCalidad) return {tipo:"LINEBREEDING", color:"#f0a500", icono:""};
-    return {tipo:"INBREEDING MODERADO", color:"#e65100", icono:""};
-  } else { // 4x4 o mas lejano
-    if (tieneCalidad) return {tipo:"OUTCROSS DIRIGIDO", color:"#1565c0", icono:""};
-    return {tipo:"OUTCROSS", color:"#1b5e20", icono:""};
+  if (maxIntens >= 6) {
+    if (tieneCalidad && soloCalidad) return {tipo:"INBREEDING DIRIGIDO", color:"#e65100", icono:"🔶"};
+    return {tipo:"INBREEDING", color:"#c62828", icono:"🔴"};
+  } else if (maxIntens >= 4) {
+    if (tieneCalidad && soloCalidad) return {tipo:"LINEBREEDING DIRIGIDO", color:"#1565c0", icono:"🟢"};
+    if (tieneCalidad) return {tipo:"LINEBREEDING", color:"#f0a500", icono:"🟡"};
+    return {tipo:"INBREEDING MODERADO", color:"#e65100", icono:"🟠"};
+  } else {
+    if (tieneCalidad) return {tipo:"OUTCROSS DIRIGIDO", color:"#1565c0", icono:"🔵"};
+    return {tipo:"OUTCROSS", color:"#2e7d32", icono:"⬜"};
   }
 }
 
@@ -1383,6 +1389,47 @@ var MONTORY = {
       "Recomendacion: linea muy positiva. Su presencia garantiza calidad vaquera y buen tipo."
     ]
   }
+,
+  "Guinda": {
+    familia:"Familia Guante", importancia:"verde", titulo:"Gran madre de la raza",
+    lineas:[
+      "Familia Guante — Hija de Esperando — Gran madre de la raza chilena.",
+      "Segun Montory: yegua de gran importancia materna, aparece en multiples genealogias modernas.",
+      "Junto con Esperando forma la pareja de reproductores mas influyente en la raza actual.",
+      "Presente en Tincada, Don Gustavo, Filamento, Rustica, Chiloco y Cuento Loco del criadero.",
+      "En Filamento aparece como bisabuela por ambas lineas — linebreeding 3x3 junto con Esperando.",
+      "Su presencia multiple en el criadero es normal y generalmente positiva.",
+      "Hija de Esperando — hereda su calidad y vigor de la linea Cuevana del Tordillo Trotador.",
+      "Gran transmisora de tipo y calidad a sus descendientes — linea materna de gran valor.",
+      "Linea Esperando-Guinda: pareja de reproductores de maxima importancia historica.",
+      "Su aparicion como bisabuela es completamente normal en caballos chilenos modernos.",
+      "Complementa bien en lineas maternas — aporta tipo chileno y calidad de corrales.",
+      "La combinacion Esperando x Guinda en bisabuelos de Filamento es linebreeding dirigido.",
+      "Defecto: su presencia multiple puede acumular caracteristicas de la linea Guante.",
+      "Recomendacion Montory: presencia normal y positiva. Controlar en cruzas donde ambos padres la tengan.",
+      "Base genetica fundamental de la raza chilena moderna junto con su padre Esperando."
+    ]
+  },
+  "Malambo": {
+    familia:"Familia Guante", importancia:"verde", titulo:"Linea Talento activa",
+    lineas:[
+      "Familia Guante — Hijo de Talento y Mordaza — Reproductor activo, padre de Rustica.",
+      "Segun Montory: heredero directo de la calidad vaquera de Talento, gran campeon de Chile.",
+      "Su padre Talento fue Campeon de Chile multiples veces entre 1999 y 2009.",
+      "Rustica del criadero es hija directa de Malambo — hereda la calidad de la linea Talento.",
+      "Rustica tiene linea Talento-Que Luna por lado paterno — una de las mejores bases posibles.",
+      "Su madre Mordaza aporta linea materna de calidad adicional a la combinacion.",
+      "Linea Malambo-Talento-Taco: tres generaciones de reproductores de calidad.",
+      "La linea Que Luna abuela de Malambo: una de las mejores madres de la historia de la raza.",
+      "Rustica con esta base paterna es la yegua con mayor potencial de mejora del criadero.",
+      "Cruce Rustica x Delito o Avispado aprovecharia al maximo la calidad de Malambo-Talento.",
+      "Linea activa en criadero Santa Isabel y otros de la zona de Osorno y Los Lagos.",
+      "Sus abuelos Taco y Que Luna — excelente combinacion de lineas Guante complementarias.",
+      "La presencia de Malambo en el criadero via Rustica es un activo genetico de primer nivel.",
+      "Recomendacion Montory: Rustica debe cruzarse con potros de lineas distintas a Talento-Malambo.",
+      "La linea Talento via Malambo garantiza calidad vaquera en los descendientes de Rustica."
+    ]
+  }
 };
 
 
@@ -1391,19 +1438,28 @@ var INBREEDING_INDIVIDUAL = {
   "Tincada":          {tipo:"OUTCROSS", comunes:[]},
   "Trasnochada":      {tipo:"OUTCROSS", comunes:[]},
   "Cuentista":        {tipo:"OUTCROSS", comunes:[]},
-  "Pillastrina":      {tipo:"LINEBREEDING DIRIGIDO", comunes:[{nombre:"Esperando",nota:"3x3",calidad:true}]},
+  "Pillastrina":      {tipo:"LINEBREEDING DIRIGIDO", comunes:[
+    {nombre:"Esperando",nota:"3x3",calidad:true,desc:"bisabuelo paterno y bisabuelo materno"}
+  ]},
   "Represa":          {tipo:"OUTCROSS", comunes:[]},
   "Rustica":          {tipo:"OUTCROSS", comunes:[]},
   "Protesta":         {tipo:"OUTCROSS", comunes:[]},
   "Chinchilla T.E.":  {tipo:"OUTCROSS", comunes:[]},
-  "Delito":           {tipo:"LINEBREEDING DIRIGIDO", comunes:[{nombre:"Estribillo",nota:"3x3",calidad:true}]},
+  "Delito":           {tipo:"LINEBREEDING DIRIGIDO", comunes:[
+    {nombre:"Estribillo",nota:"3x3",calidad:true,desc:"bisabuelo paterno y bisabuelo materno"}
+  ]},
   "Avispado":         {tipo:"OUTCROSS", comunes:[]},
   "Veneno":           {tipo:"OUTCROSS", comunes:[]},
   "Don Gustavo":      {tipo:"OUTCROSS", comunes:[]},
-  "Filamento":        {tipo:"LINEBREEDING DIRIGIDO", comunes:[{nombre:"Esperando",nota:"3x3",calidad:true},{nombre:"Guinda",nota:"3x3",calidad:true}]},
+  "Filamento":        {tipo:"LINEBREEDING DIRIGIDO", comunes:[
+    {nombre:"Esperando",nota:"3x3",calidad:true,desc:"bisabuelo paterno y bisabuelo materno"},
+    {nombre:"Guinda",nota:"3x3",calidad:true,desc:"bisabuela paterna y bisabuela materna"}
+  ]},
   "Aletazo II":       {tipo:"OUTCROSS", comunes:[]},
   "Inquieto":         {tipo:"OUTCROSS", comunes:[]},
-  "Cuento Loco":      {tipo:"LINEBREEDING DIRIGIDO", comunes:[{nombre:"Malulo",nota:"3x3",calidad:true}]},
+  "Cuento Loco":      {tipo:"LINEBREEDING DIRIGIDO", comunes:[
+    {nombre:"Malulo",nota:"3x3",calidad:true,desc:"bisabuelo paterno (via Chiloco) y bisabuelo materno (via Pillastrina)"}
+  ]},
   "Cuento Falso":     {tipo:"OUTCROSS", comunes:[]},
   "Pironela":         {tipo:"OUTCROSS", comunes:[]},
   "Potranca Cacique": {tipo:"OUTCROSS", comunes:[]}
@@ -1440,9 +1496,10 @@ function getInbreedingIndividualHTML(nombre) {
   if (d.comunes.length > 0) {
     for (var i = 0; i < d.comunes.length; i++) {
       var c = d.comunes[i];
-      var star = c.calidad ? " — STAR Reproductor de calidad Montory" : "";
+      var star = c.calidad ? " — STAR Reproductor Montory" : "";
+      var desc = c.desc ? " ("+c.desc+")" : "";
       h += '<div style="font-size:11px;color:#333;margin-bottom:3px;padding:3px 8px;background:rgba(255,255,255,0.7);border-radius:5px">';
-      h += '<b>' + c.nombre + '</b> aparece como bisabuelo por ambas lineas (Notacion: <b>' + c.nota + '</b>)' + star;
+      h += '<b>' + c.nombre + '</b> — Notacion <b>' + c.nota + '</b>' + desc + star;
       h += '</div>';
     }
   }
@@ -1464,79 +1521,86 @@ function getMontoryHTML(nombre, ap, am) {
   var amArr = am ? am.split("/").map(function(s){return s.trim();}) : [];
   var todosArr = [padre, madre].concat(apArr).concat(amArr);
 
-  var enPadre = [];
-  var enMadre = [];
-  var enTodos = [];
+  var enPadre = [], enMadre = [], enTodos = [];
   for (var rep in MONTORY) {
     if (apArr.indexOf(rep) > -1 && enPadre.indexOf(rep) < 0) enPadre.push(rep);
     if (amArr.indexOf(rep) > -1 && enMadre.indexOf(rep) < 0) enMadre.push(rep);
     if (todosArr.indexOf(rep) > -1 && enTodos.indexOf(rep) < 0) enTodos.push(rep);
   }
-  if (!padre && !madre && enTodos.length === 0) return "";
+
+  var fichaPadre = REPRODUCTORES_FICHAS[padre] || null;
+  var fichaMadre = REPRODUCTORES_FICHAS[madre] || null;
+  if (!fichaPadre && !fichaMadre && enTodos.length === 0) return "";
 
   var html = '<div class="montory-panel">';
-  html += '<div class="montory-title"><span style="font-size:14px"></span> Analisis Montory - <b>' + nombre + '</b></div>';
+  html += '<div class="montory-title"><span style="font-size:14px">📖</span> Analisis Montory — <b>' + nombre + '</b></div>';
   html += '<div class="montory-text">';
 
-  // PADRE
-  html += '<div class="montory-line" style="margin-bottom:5px"><b>PADRE: ' + (padre||"Desconocido") + '</b>';
-  if (MONTORY[padre]) {
-    html += ' - ' + MONTORY[padre].lineas[0];
+  // SECCION PADRE
+  html += '<div style="background:rgba(45,143,99,0.08);border-left:3px solid var(--verde);padding:8px 10px;border-radius:0 6px 6px 0;margin-bottom:8px">';
+  html += '<div class="montory-line" style="font-weight:700;margin-bottom:4px">PADRE: ' + (padre||"Desconocido") + '</div>';
+  if (fichaPadre) {
+    for (var i=0; i<fichaPadre.info.length && i<5; i++) {
+      html += '<div class="montory-line">' + fichaPadre.info[i] + '</div>';
+    }
+  } else if (MONTORY[padre]) {
+    html += '<div class="montory-line">' + MONTORY[padre].lineas[0] + '</div>';
+    html += '<div class="montory-line">' + MONTORY[padre].lineas[1] + '</div>';
+    html += '<div class="montory-line">' + MONTORY[padre].lineas[2] + '</div>';
   } else if (enPadre.length > 0) {
-    html += ' - Linea descendiente de <b>' + enPadre[0] + '</b> (' + MONTORY[enPadre[0]].titulo + '). ' + MONTORY[enPadre[0]].lineas[1];
+    var mp = MONTORY[enPadre[0]];
+    html += '<div class="montory-line">Desciende de <b>' + enPadre[0] + '</b> (' + mp.titulo + ').</div>';
+    html += '<div class="montory-line">' + mp.lineas[1] + '</div>';
+    if (apArr.length >= 2) html += '<div class="montory-line">Abuelos paternos: ' + apArr[0] + ' x ' + apArr[1] + '.</div>';
   } else {
-    html += ' - Reproductor del criadero de origen.';
+    html += '<div class="montory-line">Reproductor del criadero de origen.</div>';
+    if (apArr.length >= 2) html += '<div class="montory-line">Abuelos paternos: ' + apArr[0] + ' x ' + apArr[1] + '.</div>';
   }
   html += '</div>';
 
-  // MADRE
-  html += '<div class="montory-line" style="margin-bottom:5px"><b>MADRE: ' + (madre||"Desconocida") + '</b>';
-  if (MONTORY[madre]) {
-    html += ' - ' + MONTORY[madre].lineas[0];
+  // SECCION MADRE
+  html += '<div style="background:rgba(184,134,58,0.08);border-left:3px solid var(--dorado);padding:8px 10px;border-radius:0 6px 6px 0;margin-bottom:8px">';
+  html += '<div class="montory-line" style="font-weight:700;margin-bottom:4px">MADRE: ' + (madre||"Desconocida") + '</div>';
+  if (fichaMadre) {
+    for (var j=0; j<fichaMadre.info.length && j<5; j++) {
+      html += '<div class="montory-line">' + fichaMadre.info[j] + '</div>';
+    }
+  } else if (MONTORY[madre]) {
+    html += '<div class="montory-line">' + MONTORY[madre].lineas[0] + '</div>';
+    html += '<div class="montory-line">' + MONTORY[madre].lineas[1] + '</div>';
+    html += '<div class="montory-line">' + MONTORY[madre].lineas[2] + '</div>';
   } else if (enMadre.length > 0) {
-    html += ' - Linea descendiente de <b>' + enMadre[0] + '</b> (' + MONTORY[enMadre[0]].titulo + '). ' + MONTORY[enMadre[0]].lineas[1];
+    var mm = MONTORY[enMadre[0]];
+    html += '<div class="montory-line">Desciende de <b>' + enMadre[0] + '</b> (' + mm.titulo + ').</div>';
+    html += '<div class="montory-line">' + mm.lineas[1] + '</div>';
+    if (amArr.length >= 2) html += '<div class="montory-line">Abuelos maternos: ' + amArr[0] + ' x ' + amArr[1] + '.</div>';
   } else {
-    html += ' - Yegua reproductora del criadero de origen.';
+    html += '<div class="montory-line">Yegua reproductora del criadero de origen.</div>';
+    if (amArr.length >= 2) html += '<div class="montory-line">Abuelos maternos: ' + amArr[0] + ' x ' + amArr[1] + '.</div>';
   }
   html += '</div>';
 
-  // Abuelos paternos
-  if (apArr.length >= 2) {
-    html += '<div class="montory-line" style="margin-bottom:5px"><b>Abuelos paternos:</b> ' + apArr[0] + ' x ' + apArr[1] + '.';
-    if (enPadre.length > 0) {
-      html += ' ' + MONTORY[enPadre[0]].lineas[2];
-    }
-    html += '</div>';
-  }
-
-  // Abuelos maternos
-  if (amArr.length >= 2) {
-    html += '<div class="montory-line" style="margin-bottom:5px"><b>Abuelos maternos:</b> ' + amArr[0] + ' x ' + amArr[1] + '.';
-    if (enMadre.length > 0) {
-      html += ' ' + MONTORY[enMadre[0]].lineas[2];
-    }
-    html += '</div>';
-  }
-
-  // Reproductores Montory en la genealogia
+  // REPRODUCTORES MONTORY EN LA GENEALOGIA
   if (enTodos.length > 0) {
     html += '<hr class="montory-sep">';
-    html += '<div class="montory-line" style="font-weight:500;margin-bottom:4px">Reproductores Montory presentes:</div>';
+    html += '<div class="montory-line" style="font-weight:600;margin-bottom:5px">Reproductores Montory en la genealogia:</div>';
     var max = Math.min(enTodos.length, 4);
-    for (var k = 0; k < max; k++) {
+    for (var k=0; k<max; k++) {
       var rm = MONTORY[enTodos[k]];
-      html += '<div class="montory-line" style="margin-left:8px;margin-bottom:3px"> <b>' + enTodos[k] + '</b> (' + rm.titulo + '): ' + rm.lineas[1] + '</div>';
+      html += '<div class="montory-line" style="margin-left:8px;margin-bottom:3px;padding:3px 8px;background:rgba(255,255,255,0.6);border-radius:5px">';
+      html += '<b>' + enTodos[k] + '</b> (' + rm.titulo + '): ' + rm.lineas[1];
+      html += '</div>';
     }
   }
 
-  // Recomendacion
+  // RECOMENDACION
   if (enTodos.length > 0) {
     html += '<hr class="montory-sep">';
-    var principal = MONTORY[enTodos[0]];
-    html += '<div class="montory-line" style="color:#5a3e1b;font-style:italic">' + principal.lineas[principal.lineas.length-1] + '</div>';
+    var princ = MONTORY[enTodos[0]];
+    html += '<div class="montory-line" style="color:#5a3e1b;font-style:italic">' + princ.lineas[princ.lineas.length-1] + '</div>';
   }
 
-  // Inbreeding individual
+  // INBREEDING INDIVIDUAL
   html += getInbreedingIndividualHTML(nombre);
   html += '</div></div>';
   return html;
